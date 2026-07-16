@@ -20,9 +20,18 @@ const STAFF_LINKS = [
   { href: "/dashboard/checklists", label: "Checklists" },
 ];
 
-export function DashboardNav({ role }: { role: UserRole }) {
+export function DashboardNav({
+  role,
+  isSuperAdmin = false,
+}: {
+  role: UserRole;
+  isSuperAdmin?: boolean;
+}) {
   const pathname = usePathname();
-  const links = role === "admin" ? ADMIN_LINKS : STAFF_LINKS;
+  const baseLinks = role === "admin" ? ADMIN_LINKS : STAFF_LINKS;
+  const links = isSuperAdmin
+    ? [...baseLinks, { href: "/internal/accounts", label: "Admin" }]
+    : baseLinks;
 
   return (
     <nav className="flex items-center gap-1">

@@ -47,10 +47,15 @@ export default async function InternalAccountsPage() {
     );
   }
 
-  const typedAdmins = (admins ?? []) as Profile[];
+  // Exclude allowlisted super-admin identities (e.g. your own login used
+  // just to reach this page) - they're operator accounts, not customers to
+  // manage the plan of.
+  const typedAdmins = ((admins ?? []) as Profile[]).filter(
+    (accountAdmin) => !isSuperAdminEmail(accountAdmin.email),
+  );
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6 p-8">
+    <div className="max-w-3xl space-y-6">
       <div>
         <h1 className="text-xl font-semibold">Accounts</h1>
         <p className="text-sm text-muted-foreground">
