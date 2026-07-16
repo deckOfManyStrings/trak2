@@ -48,7 +48,7 @@ export default async function Page({ searchParams }: PageProps) {
         </div>
 
         <h1 className="text-center text-[1.6rem] font-semibold tracking-tight text-foreground">
-          {mode === "signup" ? "Create an account" : "Log in to Trak"}
+          {mode === "signup" ? "Create an account" : "Log in to Traklify"}
         </h1>
         <p className="mt-2 text-center text-[0.925rem] text-muted-foreground">
           {mode === "signup"
@@ -110,7 +110,7 @@ export default async function Page({ searchParams }: PageProps) {
             </>
           ) : (
             <>
-              New to Trak?{" "}
+              New to Traklify?{" "}
               <Link
                 href="/?mode=signup"
                 className="font-medium text-foreground underline underline-offset-4"
@@ -124,7 +124,7 @@ export default async function Page({ searchParams }: PageProps) {
 
       <p className="mt-16 max-w-[400px] text-center text-xs text-muted-foreground">
         By continuing, you acknowledge that you have read and agree to
-        Trak&apos;s{" "}
+        Traklify&apos;s{" "}
         <Link href="#" className="underline underline-offset-4 hover:text-foreground">
           Terms &amp; Conditions
         </Link>{" "}

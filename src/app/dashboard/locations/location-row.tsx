@@ -7,6 +7,8 @@ import {
 } from "@/app/dashboard/locations/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import type { Location } from "@/types/db";
 import { useActionState, useRef, useState } from "react";
 
@@ -56,6 +58,18 @@ export function LocationRow({
             defaultValue={location.address ?? ""}
             placeholder="Address"
           />
+          <div className="space-y-1.5">
+            <Label htmlFor={`program-description-${location.id}`}>
+              Program description
+            </Label>
+            <Textarea
+              id={`program-description-${location.id}`}
+              name="programDescription"
+              defaultValue={location.program_description ?? ""}
+              placeholder="What this program does, for the Annual Assessment Report's Program Overview section"
+              rows={3}
+            />
+          </div>
           <div className="flex gap-2">
             <Button type="submit" size="sm" disabled={updatePending}>
               Save
@@ -84,6 +98,11 @@ export function LocationRow({
         <p className="mt-1 text-xs text-muted-foreground">
           {staffCount} staff &middot; {clientCount} clients
         </p>
+        {location.program_description ? (
+          <p className="mt-1 text-xs text-muted-foreground">
+            {location.program_description}
+          </p>
+        ) : null}
         {updateState.error ? (
           <p className="mt-1 text-xs text-destructive">{updateState.error}</p>
         ) : null}

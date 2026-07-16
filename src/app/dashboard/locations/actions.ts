@@ -65,6 +65,9 @@ export async function updateLocation(
   const id = String(formData.get("id") ?? "");
   const name = String(formData.get("name") ?? "").trim();
   const address = String(formData.get("address") ?? "").trim();
+  const programDescription = String(
+    formData.get("programDescription") ?? "",
+  ).trim();
 
   if (!id || !name) {
     return { error: "Location name is required." };
@@ -75,7 +78,11 @@ export async function updateLocation(
 
   const { error } = await supabase
     .from("locations")
-    .update({ name, address: address || null })
+    .update({
+      name,
+      address: address || null,
+      program_description: programDescription || null,
+    })
     .eq("id", id)
     .eq("owner_id", session.userId);
 

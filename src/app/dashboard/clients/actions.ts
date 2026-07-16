@@ -57,6 +57,51 @@ export async function createClientRecord(
 }
 
 /**
+ * Updates a client's demographic fields (name, DOB, admission date). These
+ * feed the Annual Assessment Report header, so both admins and staff
+ * assigned to the client's location may edit them - enforced by the clients
+ * RLS update policy, same as setClientStatus below.
+ */
+export async function updateClientRecord(
+  _prevState: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const session = await getSessionProfile();
+  if (!session) {
+    return { error: "You must be signed in." };
+  }
+
+  const clientId = String(formData.get("clientId") ?? "");
+  const fullName = String(formData.get("fullName") ?? "").trim();
+  const dateOfBirth = String(formData.get("dateOfBirth") ?? "").trim();
+  const dateOfAdmission = String(formData.get("dateOfAdmission") ?? "").trim();
+
+  if (!clientId || !fullName) {
+    return { error: "Client name is required." };
+  }
+
+  const cookieStore = await cookies();
+  const supabase = createClient(cookieStore);
+
+  const { error } = await supabase
+    .from("clients")
+    .update({
+      full_name: fullName,
+      date_of_birth: dateOfBirth || null,
+      date_of_admission: dateOfAdmission || null,
+    })
+    .eq("id", clientId);
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath("/dashboard/clients");
+  revalidatePath("/dashboard/board");
+  return { success: true };
+}
+
+/**
  * Toggles a client's active/inactive status. Both admins and staff assigned
  * to the client's location may call this - enforced by the clients RLS
  * update policy, so no extra role check is needed here beyond auth.

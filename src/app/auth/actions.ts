@@ -84,8 +84,9 @@ export async function signOut() {
   redirect("/");
 }
 
-const DEMO_ADMIN_EMAIL = "demo@trak.app";
-const DEMO_ADMIN_PASSWORD = process.env.DEMO_USER_PASSWORD ?? "TrakDemo!2026";
+const DEMO_ADMIN_EMAIL = "demo@traklify.com";
+const DEMO_ADMIN_PASSWORD =
+  process.env.DEMO_USER_PASSWORD ?? "TraklifyDemo!2026";
 
 // Seeds one location + one staff member + a couple of clients per entry, so
 // the demo account has something to look at on every page (locations,
@@ -93,13 +94,13 @@ const DEMO_ADMIN_PASSWORD = process.env.DEMO_USER_PASSWORD ?? "TrakDemo!2026";
 const DEMO_LOCATIONS = [
   {
     name: "Sunrise Center",
-    staffEmail: "jordan.demo@trak.app",
+    staffEmail: "jordan.demo@traklify.com",
     staffName: "Jordan Rivera",
     clients: ["Eleanor Whitfield", "Marcus Bell"],
   },
   {
     name: "Maple Street Location",
-    staffEmail: "amara.demo@trak.app",
+    staffEmail: "amara.demo@traklify.com",
     staffName: "Amara Chen",
     clients: ["Grace Thompson", "Walter Nguyen"],
   },

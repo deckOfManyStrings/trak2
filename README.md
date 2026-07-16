@@ -1,4 +1,4 @@
-# trak2
+# Traklify
 
 Starter app with Next.js App Router, shadcn/ui, Tailwind CSS, and Supabase.
 

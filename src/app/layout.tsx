@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Trak",
-  description: "Sign in to your Trak account.",
+  title: "Traklify",
+  description: "Sign in to your Traklify account.",
 };
 
 export default function RootLayout({

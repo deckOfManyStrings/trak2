@@ -78,6 +78,12 @@ export default async function ClientChecklistPage({
           >
             Export to Excel
           </a>
+          <Link
+            href={`/dashboard/checklists/${clientId}/annual-report`}
+            className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
+          >
+            Annual Report
+          </Link>
         </div>
       </div>
 
