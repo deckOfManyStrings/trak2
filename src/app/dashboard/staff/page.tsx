@@ -1,5 +1,6 @@
 import { InviteStaffForm } from "@/app/dashboard/staff/invite-staff-form";
 import { StaffRow } from "@/app/dashboard/staff/staff-row";
+import { FREE_PLAN_LIMITS } from "@/lib/plan-limits";
 import { createClient } from "@/utils/supabase/server";
 import { getSessionProfile } from "@/utils/supabase/session";
 import type { Location, Profile } from "@/types/db";
@@ -68,6 +69,12 @@ export default async function StaffPage() {
           {typedLocations.length === 0 ? (
             <p className="text-sm text-muted-foreground">
               Create a location first so you can assign new staff to it.
+            </p>
+          ) : session.profile.plan === "free" &&
+            typedStaff.length >= FREE_PLAN_LIMITS.staff ? (
+            <p className="text-sm text-muted-foreground">
+              You&apos;ve reached the free plan limit of{" "}
+              {FREE_PLAN_LIMITS.staff} staff members. Upgrade to add more.
             </p>
           ) : (
             <InviteStaffForm locations={typedLocations} />

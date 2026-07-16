@@ -1,5 +1,6 @@
 export type UserRole = "admin" | "staff";
 export type AccountStatus = "invited" | "active" | "inactive";
+export type AccountPlan = "free" | "premium";
 
 export type Profile = {
   id: string;
@@ -8,6 +9,7 @@ export type Profile = {
   email: string;
   full_name: string | null;
   status: AccountStatus;
+  plan: AccountPlan;
   created_at: string;
 };
 

@@ -1,4 +1,9 @@
-import { signIn, signInAsDemo, signUp } from "@/app/auth/actions";
+import {
+  requestPasswordReset,
+  signIn,
+  signInAsDemo,
+  signUp,
+} from "@/app/auth/actions";
 import { AuthForm } from "@/app/auth/auth-form";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/server";
@@ -34,7 +39,12 @@ export default async function Page({ searchParams }: PageProps) {
   const mode = modeParam === "signup" ? "signup" : "signin";
   const statusMessage = error ?? message;
   const initialEmail = emailParam ?? "";
-  const initialStep = error && initialEmail ? "password" : "email";
+  const initialStep: "email" | "password" | "forgot" =
+    modeParam === "forgot"
+      ? "forgot"
+      : error && initialEmail
+        ? "password"
+        : "email";
 
   if (user) {
     redirect("/dashboard");
@@ -71,6 +81,7 @@ export default async function Page({ searchParams }: PageProps) {
             key={`${mode}-${initialStep}-${initialEmail}`}
             mode={mode}
             action={mode === "signup" ? signUp : signIn}
+            forgotPasswordAction={requestPasswordReset}
             initialEmail={initialEmail}
             initialStep={initialStep}
           />
@@ -125,11 +136,11 @@ export default async function Page({ searchParams }: PageProps) {
       <p className="mt-16 max-w-[400px] text-center text-xs text-muted-foreground">
         By continuing, you acknowledge that you have read and agree to
         Traklify&apos;s{" "}
-        <Link href="#" className="underline underline-offset-4 hover:text-foreground">
+        <Link href="/terms" className="underline underline-offset-4 hover:text-foreground">
           Terms &amp; Conditions
         </Link>{" "}
         and{" "}
-        <Link href="#" className="underline underline-offset-4 hover:text-foreground">
+        <Link href="/privacy" className="underline underline-offset-4 hover:text-foreground">
           Privacy Policy
         </Link>
         .

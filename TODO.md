@@ -23,15 +23,15 @@ We now own `traklify.com` and will send as `support@traklify.com`.
       `support@traklify.com` mailbox, so they won't conflict with it.
 - [x] Wait for the domain to show **Verified** in Resend (can take a few
       minutes up to a few hours for DNS to propagate).
-- [ ] In Resend -> API Keys, create a key and put it in `.env.local` as
+- [x] In Resend -> API Keys, create a key and put it in `.env.local` as
       `RESEND_API_KEY` (see `.env.example`) for local dev.
-- [ ] Update the **hosted** Supabase project -> Authentication -> Emails ->
+- [x] Update the **hosted** Supabase project -> Authentication -> Emails ->
       SMTP Settings:
   - Host: `smtp.resend.com`, Port: `465`, Username: `resend`
   - Password: the Resend API key
   - Sender email: `support@traklify.com`
   - Sender name: `Traklify`
-- [ ] Re-test with a real signup/invite and confirm the email is delivered
+- [x] Re-test with a real signup/invite and confirm the email is delivered
       (check Resend's dashboard logs + the actual `support@traklify.com`
       inbox for replies).
 
@@ -57,3 +57,16 @@ show the real underlying message (or a sensible fallback) instead.
 - [ ] Add a sensible fallback string (e.g. "Something went wrong, please
       try again.") for any error shape that has no usable message, so users
       never see raw JSON.
+
+## Freemium / signups
+
+### 3. Revisit fully-open self-serve signup
+
+Right now anyone who signs up automatically becomes a brand-new admin,
+owning their own isolated free account, with no gate at all (no invite
+code, no verification beyond email confirmation). Now that a real
+free/premium distinction exists (`profiles.plan`, see
+`supabase/migrations/0014_account_plan.sql`, and the manual toggle at
+`/internal/accounts`), decide whether that should stay this open, or
+whether some additional signup gating/verification makes sense - e.g. to
+reduce throwaway/abuse accounts, or once real billing is added.

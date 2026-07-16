@@ -1,5 +1,6 @@
 import { ClientRow } from "@/app/dashboard/clients/client-row";
 import { CreateClientForm } from "@/app/dashboard/clients/create-client-form";
+import { FREE_PLAN_LIMITS } from "@/lib/plan-limits";
 import { createClient } from "@/utils/supabase/server";
 import { getSessionProfile } from "@/utils/supabase/session";
 import type { Client, Location } from "@/types/db";
@@ -70,6 +71,12 @@ export default async function ClientsPage() {
             {typedLocations.length === 0 ? (
               <p className="text-sm text-muted-foreground">
                 Create a location first.
+              </p>
+            ) : session.profile.plan === "free" &&
+              typedClients.length >= FREE_PLAN_LIMITS.clients ? (
+              <p className="text-sm text-muted-foreground">
+                You&apos;ve reached the free plan limit of{" "}
+                {FREE_PLAN_LIMITS.clients} clients. Upgrade to add more.
               </p>
             ) : (
               <CreateClientForm locations={typedLocations} />

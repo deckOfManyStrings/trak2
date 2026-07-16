@@ -1,5 +1,6 @@
 import { CreateLocationForm } from "@/app/dashboard/locations/create-location-form";
 import { LocationRow } from "@/app/dashboard/locations/location-row";
+import { FREE_PLAN_LIMITS } from "@/lib/plan-limits";
 import { createClient } from "@/utils/supabase/server";
 import { getSessionProfile } from "@/utils/supabase/session";
 import { cookies } from "next/headers";
@@ -81,7 +82,15 @@ export default async function LocationsPage() {
 
         <div className="h-fit rounded-lg border bg-white p-4">
           <h2 className="mb-3 text-sm font-semibold">Add a location</h2>
-          <CreateLocationForm />
+          {session.profile.plan === "free" &&
+          (locations ?? []).length >= FREE_PLAN_LIMITS.locations ? (
+            <p className="text-sm text-muted-foreground">
+              You&apos;ve reached the free plan limit of{" "}
+              {FREE_PLAN_LIMITS.locations} location. Upgrade to add more.
+            </p>
+          ) : (
+            <CreateLocationForm />
+          )}
         </div>
       </div>
     </div>

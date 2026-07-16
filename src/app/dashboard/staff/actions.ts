@@ -1,5 +1,6 @@
 "use server";
 
+import { FREE_PLAN_LIMITS } from "@/lib/plan-limits";
 import { createAdminClient } from "@/utils/supabase/admin";
 import { createClient } from "@/utils/supabase/server";
 import { getSessionProfile } from "@/utils/supabase/session";
@@ -36,6 +37,22 @@ export async function inviteStaff(
 
   if (!email) {
     return { error: "Email is required." };
+  }
+
+  if (session.profile.plan === "free") {
+    const cookieStore = await cookies();
+    const supabase = createClient(cookieStore);
+    const { count } = await supabase
+      .from("profiles")
+      .select("id", { count: "exact", head: true })
+      .eq("role", "staff")
+      .eq("owner_id", session.userId);
+
+    if ((count ?? 0) >= FREE_PLAN_LIMITS.staff) {
+      return {
+        error: `Free plan is limited to ${FREE_PLAN_LIMITS.staff} staff members. Upgrade to add more.`,
+      };
+    }
   }
 
   let admin;

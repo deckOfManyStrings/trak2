@@ -8,18 +8,55 @@ import { useState } from "react";
 type AuthFormProps = {
   mode: "signin" | "signup";
   action: (formData: FormData) => void | Promise<void>;
+  forgotPasswordAction: (formData: FormData) => void | Promise<void>;
   initialEmail?: string;
-  initialStep?: "email" | "password";
+  initialStep?: "email" | "password" | "forgot";
 };
 
 export function AuthForm({
   mode,
   action,
+  forgotPasswordAction,
   initialEmail = "",
   initialStep = "email",
 }: AuthFormProps) {
-  const [step, setStep] = useState<"email" | "password">(initialStep);
+  const [step, setStep] = useState<"email" | "password" | "forgot">(
+    initialStep,
+  );
   const [email, setEmail] = useState(initialEmail);
+
+  if (step === "forgot") {
+    return (
+      <form action={forgotPasswordAction} className="space-y-3">
+        <button
+          type="button"
+          onClick={() => setStep("email")}
+          className="flex w-full items-center gap-2 rounded-md border border-input px-3.5 py-2.5 text-left text-[0.925rem] text-muted-foreground transition-colors hover:bg-muted/60"
+        >
+          <ArrowLeft className="size-3.5 shrink-0" />
+          <span className="text-foreground">Back to log in</span>
+        </button>
+        <Input
+          type="email"
+          name="email"
+          placeholder="Email address"
+          defaultValue={email}
+          onChange={(event) => setEmail(event.target.value)}
+          autoFocus
+          autoComplete="email"
+          required
+          className="h-11 rounded-md px-3.5 text-[0.925rem]"
+        />
+        <Button
+          type="submit"
+          size="lg"
+          className="h-11 w-full rounded-md text-[0.925rem]"
+        >
+          Send reset link
+        </Button>
+      </form>
+    );
+  }
 
   if (step === "email") {
     return (
@@ -75,12 +112,13 @@ export function AuthForm({
       />
       {mode === "signin" ? (
         <div className="text-right">
-          <a
-            href="#"
+          <button
+            type="button"
+            onClick={() => setStep("forgot")}
             className="text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground"
           >
             Forgot password?
-          </a>
+          </button>
         </div>
       ) : null}
       <Button

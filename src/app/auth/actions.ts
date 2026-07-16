@@ -84,6 +84,34 @@ export async function signOut() {
   redirect("/");
 }
 
+/**
+ * Sends a password-reset email. Always redirects with the same generic
+ * confirmation message regardless of whether the address exists, so this
+ * can't be used to probe which emails have accounts.
+ */
+export async function requestPasswordReset(formData: FormData) {
+  const email = String(formData.get("email") ?? "").trim();
+
+  if (!email) {
+    redirectWithMessage("error", "Enter your email address.", {
+      mode: "forgot",
+    });
+  }
+
+  const cookieStore = await cookies();
+  const supabase = createClient(cookieStore);
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+
+  await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${siteUrl}/auth/reset-password`,
+  });
+
+  redirectWithMessage(
+    "message",
+    "If an account exists for that email, a password reset link is on its way.",
+  );
+}
+
 const DEMO_ADMIN_EMAIL = "demo@traklify.com";
 const DEMO_ADMIN_PASSWORD =
   process.env.DEMO_USER_PASSWORD ?? "TraklifyDemo!2026";

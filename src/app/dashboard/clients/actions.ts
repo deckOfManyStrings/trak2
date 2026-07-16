@@ -1,5 +1,6 @@
 "use server";
 
+import { FREE_PLAN_LIMITS } from "@/lib/plan-limits";
 import { createClient } from "@/utils/supabase/server";
 import { getSessionProfile } from "@/utils/supabase/session";
 import { cookies } from "next/headers";
@@ -39,6 +40,19 @@ export async function createClientRecord(
 
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
+
+  if (session.profile.plan === "free") {
+    const { count } = await supabase
+      .from("clients")
+      .select("id", { count: "exact", head: true })
+      .eq("owner_id", session.userId);
+
+    if ((count ?? 0) >= FREE_PLAN_LIMITS.clients) {
+      return {
+        error: `Free plan is limited to ${FREE_PLAN_LIMITS.clients} clients. Upgrade to add more.`,
+      };
+    }
+  }
 
   const { error } = await supabase.from("clients").insert({
     owner_id: session.userId,
