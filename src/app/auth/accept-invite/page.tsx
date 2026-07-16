@@ -24,6 +24,18 @@ export default function AcceptInvitePage() {
     let active = true;
 
     async function init() {
+      // Supabase's invite email can land here either with PKCE-style
+      // ?code=... (needs an explicit exchange) or with the older
+      // #access_token=...&refresh_token=... hash. Read both from the URL
+      // *before* doing anything else, since we're about to sign out (which
+      // clears local storage) and, with detectSessionInUrl disabled on this
+      // client, nothing else is going to pick these up for us.
+      const url = new URL(window.location.href);
+      const code = url.searchParams.get("code");
+      const hashParams = new URLSearchParams(url.hash.slice(1));
+      const accessToken = hashParams.get("access_token");
+      const refreshToken = hashParams.get("refresh_token");
+
       // This page's whole job is to switch the browser over to the
       // *invited* user's identity. Supabase sessions live in cookies that
       // are shared across every tab, so if you're still signed in as
@@ -34,25 +46,27 @@ export default function AcceptInvitePage() {
       // about which account the invite token below authenticates as.
       await supabase.auth.signOut({ scope: "local" });
 
-      // Supabase's invite email can land here either with PKCE-style
-      // ?code=... (needs an explicit exchange) or with the older
-      // #access_token=... hash (auto-handled by detectSessionInUrl).
-      // Handle both so this works regardless of which flow is active.
-      const url = new URL(window.location.href);
-      const code = url.searchParams.get("code");
+      let sessionError: { message: string } | null = null;
 
       if (code) {
-        const { error: exchangeError } =
-          await supabase.auth.exchangeCodeForSession(code);
-        window.history.replaceState({}, "", url.pathname);
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
+        sessionError = error;
+      } else if (accessToken && refreshToken) {
+        const { error } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        });
+        sessionError = error;
+      }
 
-        if (exchangeError) {
-          if (active) {
-            setSessionValid(false);
-            setChecking(false);
-          }
-          return;
+      window.history.replaceState({}, "", url.pathname);
+
+      if (sessionError) {
+        if (active) {
+          setSessionValid(false);
+          setChecking(false);
         }
+        return;
       }
 
       const { data } = await supabase.auth.getUser();
