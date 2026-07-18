@@ -4,6 +4,7 @@ import { createClientRecord, type ActionState } from "@/app/dashboard/clients/ac
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import type { Location } from "@/types/db";
 import { useActionState, useEffect, useRef } from "react";
 
@@ -29,13 +30,52 @@ export function CreateClientForm({ locations }: { locations: Location[] }) {
         <Input id="client-name" name="fullName" placeholder="Pat Rivera" required />
       </div>
       <div className="space-y-1.5">
+        <Label htmlFor="client-ucid">UCID</Label>
+        <Input id="client-ucid" name="ucid" placeholder="Unique client ID" />
+      </div>
+      <div className="space-y-1.5">
+        <Label htmlFor="client-allergies">Allergies</Label>
+        <Textarea
+          id="client-allergies"
+          name="allergies"
+          placeholder="Known allergies"
+          rows={3}
+        />
+      </div>
+      <div className="space-y-1.5">
+        <Label htmlFor="client-sc-name">Service coordinator name</Label>
+        <Input
+          id="client-sc-name"
+          name="serviceCoordinatorName"
+          placeholder="Jordan Lee"
+        />
+      </div>
+      <div className="space-y-1.5">
+        <Label htmlFor="client-sc-phone">Service coordinator phone</Label>
+        <Input
+          id="client-sc-phone"
+          name="serviceCoordinatorPhone"
+          type="tel"
+          placeholder="(555) 555-5555"
+        />
+      </div>
+      <div className="space-y-1.5">
+        <Label htmlFor="client-sc-email">Service coordinator email</Label>
+        <Input
+          id="client-sc-email"
+          name="serviceCoordinatorEmail"
+          type="email"
+          placeholder="coordinator@example.com"
+        />
+      </div>
+      <div className="space-y-1.5">
         <Label htmlFor="client-location">Location</Label>
         <select
           id="client-location"
           name="locationId"
           defaultValue={locations[0]?.id ?? ""}
           required
-          className="h-8 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
+          className="h-11 w-full rounded-lg border border-input bg-transparent px-3 text-base outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:h-8 md:px-2.5 md:text-sm dark:bg-input/30"
         >
           {locations.map((location) => (
             <option key={location.id} value={location.id}>

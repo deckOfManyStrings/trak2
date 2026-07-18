@@ -5,7 +5,7 @@ import {
   monthDateRange,
   normalizeMonthParam,
 } from "@/app/dashboard/checklists/data";
-import { getOrCreateObjectives } from "@/app/dashboard/checklists/objectives";
+import { getClientObjectives } from "@/app/dashboard/checklists/objectives";
 import { createClient } from "@/utils/supabase/server";
 import { getSessionProfile } from "@/utils/supabase/session";
 import type { ChecklistEntry, Client } from "@/types/db";
@@ -47,10 +47,7 @@ export async function GET(request: Request, { params }: RouteParams) {
   }
 
   const typedClient = client as Client;
-  const objectives = await getOrCreateObjectives(
-    supabase,
-    typedClient.owner_id,
-  );
+  const objectives = await getClientObjectives(supabase, clientId);
 
   const { start, end } = monthDateRange(month);
   const { data: entries } = await supabase

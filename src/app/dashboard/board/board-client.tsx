@@ -29,11 +29,13 @@ function BoardCard({
   title,
   subtitle,
   onDragStart,
+  moveControl,
 }: {
   id: string;
   title: string;
   subtitle?: string;
   onDragStart: (id: string) => void;
+  moveControl?: ReactNode;
 }) {
   return (
     <div
@@ -43,12 +45,13 @@ function BoardCard({
         event.dataTransfer.setData("text/plain", id);
         onDragStart(id);
       }}
-      className="cursor-grab rounded-md border bg-white p-3 text-sm shadow-sm active:cursor-grabbing"
+      className="rounded-md border bg-white p-3 text-sm shadow-sm md:cursor-grab md:active:cursor-grabbing"
     >
       <p className="font-medium text-foreground">{title}</p>
       {subtitle ? (
         <p className="text-xs text-muted-foreground">{subtitle}</p>
       ) : null}
+      {moveControl ? <div className="mt-3 md:hidden">{moveControl}</div> : null}
     </div>
   );
 }
@@ -77,7 +80,7 @@ function BoardColumn({
         onDrop();
       }}
       className={cn(
-        "flex w-64 shrink-0 flex-col gap-2 rounded-lg border bg-muted/30 p-3 transition-colors",
+        "flex w-[min(100%,18rem)] shrink-0 flex-col gap-2 rounded-lg border bg-muted/30 p-3 transition-colors sm:w-64",
         isOver && "border-foreground bg-muted",
       )}
     >
@@ -86,6 +89,9 @@ function BoardColumn({
     </div>
   );
 }
+
+const selectClassName =
+  "h-11 w-full rounded-lg border border-input bg-transparent px-3 text-base outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30";
 
 export function BoardClient({
   locations,
@@ -99,12 +105,8 @@ export function BoardClient({
   const [error, setError] = useState<string | null>(null);
   const [, startTransition] = useTransition();
 
-  function handleStaffDrop(locationId: string | null) {
-    if (!dragId) return;
-    const staffId = dragId;
-    setDragId(null);
+  function moveStaff(staffId: string, locationId: string | null) {
     setError(null);
-
     setStaff((prev) =>
       prev.map((member) =>
         member.id === staffId ? { ...member, locationId } : member,
@@ -119,12 +121,8 @@ export function BoardClient({
     });
   }
 
-  function handleClientDrop(locationId: string) {
-    if (!dragId) return;
-    const clientId = dragId;
-    setDragId(null);
+  function moveClient(clientId: string, locationId: string) {
     setError(null);
-
     setClients((prev) =>
       prev.map((client) =>
         client.id === clientId
@@ -139,14 +137,28 @@ export function BoardClient({
     });
   }
 
+  function handleStaffDrop(locationId: string | null) {
+    if (!dragId) return;
+    const staffId = dragId;
+    setDragId(null);
+    moveStaff(staffId, locationId);
+  }
+
+  function handleClientDrop(locationId: string) {
+    if (!dragId) return;
+    const clientId = dragId;
+    setDragId(null);
+    moveClient(clientId, locationId);
+  }
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1 rounded-lg border bg-white p-1">
         <button
           type="button"
           onClick={() => setTab("staff")}
           className={cn(
-            "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+            "min-h-11 flex-1 rounded-md px-3 text-sm font-medium transition-colors",
             tab === "staff"
               ? "bg-muted text-foreground"
               : "text-muted-foreground hover:text-foreground",
@@ -158,7 +170,7 @@ export function BoardClient({
           type="button"
           onClick={() => setTab("clients")}
           className={cn(
-            "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+            "min-h-11 flex-1 rounded-md px-3 text-sm font-medium transition-colors",
             tab === "clients"
               ? "bg-muted text-foreground"
               : "text-muted-foreground hover:text-foreground",
@@ -167,6 +179,14 @@ export function BoardClient({
           Clients
         </button>
       </div>
+
+      <p className="text-sm text-muted-foreground md:hidden">
+        Use the location menu on a card to move someone.
+      </p>
+      <p className="hidden text-sm text-muted-foreground md:block">
+        Drag a card to another location column, or use the location menu on
+        smaller screens.
+      </p>
 
       {error ? <p className="text-sm text-destructive">{error}</p> : null}
 
@@ -188,6 +208,23 @@ export function BoardClient({
                       title={member.full_name || member.email}
                       subtitle={member.email}
                       onDragStart={setDragId}
+                      moveControl={
+                        <select
+                          aria-label={`Move ${member.full_name || member.email}`}
+                          value={member.locationId ?? ""}
+                          onChange={(event) =>
+                            moveStaff(member.id, event.target.value || null)
+                          }
+                          className={selectClassName}
+                        >
+                          <option value="">Unassigned</option>
+                          {locations.map((loc) => (
+                            <option key={loc.id} value={loc.id}>
+                              {loc.name}
+                            </option>
+                          ))}
+                        </select>
+                      }
                     />
                   ))}
               </BoardColumn>
@@ -202,6 +239,23 @@ export function BoardClient({
                     title={member.full_name || member.email}
                     subtitle={member.email}
                     onDragStart={setDragId}
+                    moveControl={
+                      <select
+                        aria-label={`Move ${member.full_name || member.email}`}
+                        value=""
+                        onChange={(event) =>
+                          moveStaff(member.id, event.target.value || null)
+                        }
+                        className={selectClassName}
+                      >
+                        <option value="">Unassigned</option>
+                        {locations.map((loc) => (
+                          <option key={loc.id} value={loc.id}>
+                            {loc.name}
+                          </option>
+                        ))}
+                      </select>
+                    }
                   />
                 ))}
             </BoardColumn>
@@ -220,8 +274,26 @@ export function BoardClient({
                     key={client.id}
                     id={client.id}
                     title={client.full_name}
-                    subtitle={client.status === "inactive" ? "Inactive" : undefined}
+                    subtitle={
+                      client.status === "inactive" ? "Inactive" : undefined
+                    }
                     onDragStart={setDragId}
+                    moveControl={
+                      <select
+                        aria-label={`Move ${client.full_name}`}
+                        value={client.location_id}
+                        onChange={(event) =>
+                          moveClient(client.id, event.target.value)
+                        }
+                        className={selectClassName}
+                      >
+                        {locations.map((loc) => (
+                          <option key={loc.id} value={loc.id}>
+                            {loc.name}
+                          </option>
+                        ))}
+                      </select>
+                    }
                   />
                 ))}
             </BoardColumn>

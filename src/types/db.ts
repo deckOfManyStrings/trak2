@@ -37,6 +37,11 @@ export type Client = {
   status: AccountStatus;
   date_of_birth: string | null;
   date_of_admission: string | null;
+  ucid: string | null;
+  allergies: string | null;
+  service_coordinator_name: string | null;
+  service_coordinator_phone: string | null;
+  service_coordinator_email: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -46,6 +51,7 @@ export type ChecklistValue = "Y" | "N" | "H" | "NP" | "N/A";
 export type Objective = {
   id: string;
   owner_id: string;
+  client_id: string;
   title: string;
   position: number;
   created_at: string;

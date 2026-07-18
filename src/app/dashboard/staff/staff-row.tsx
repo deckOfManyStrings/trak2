@@ -47,7 +47,7 @@ export function StaffRow({ staff, currentLocationId, locations }: StaffRowProps)
   };
 
   return (
-    <li className="flex items-center justify-between gap-4 rounded-lg border bg-white p-4">
+    <li className="flex flex-col gap-4 rounded-lg border bg-white p-4 sm:flex-row sm:items-start sm:justify-between">
       <div className="min-w-0">
         <p className="truncate font-medium text-foreground">
           {staff.full_name || staff.email}
@@ -64,12 +64,12 @@ export function StaffRow({ staff, currentLocationId, locations }: StaffRowProps)
         ) : null}
       </div>
 
-      <div className="flex shrink-0 items-center gap-2">
+      <div className="flex flex-col gap-2 sm:shrink-0 sm:flex-row sm:items-center">
         <select
           value={currentLocationId ?? ""}
           disabled={isPending}
           onChange={(event) => handleLocationChange(event.target.value)}
-          className="h-8 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
+          className="h-11 w-full rounded-lg border border-input bg-transparent px-3 text-base outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 sm:h-8 sm:w-auto sm:px-2.5 sm:text-sm dark:bg-input/30"
         >
           <option value="">Unassigned</option>
           {locations.map((location) => (
@@ -79,12 +79,12 @@ export function StaffRow({ staff, currentLocationId, locations }: StaffRowProps)
           ))}
         </select>
 
-        <form ref={revokeFormRef} action={revokeAction}>
+        <form ref={revokeFormRef} action={revokeAction} className="w-full sm:w-auto">
           <input type="hidden" name="staffId" value={staff.id} />
           <Button
             type="button"
-            size="sm"
             variant="destructive"
+            className="w-full sm:w-auto"
             disabled={revokePending}
             onClick={() => {
               if (

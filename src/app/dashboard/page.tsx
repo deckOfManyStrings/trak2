@@ -18,7 +18,7 @@ function SummaryCard({
   return (
     <Link
       href={href}
-      className="rounded-lg border bg-white p-5 transition-colors hover:border-foreground/30"
+      className="rounded-lg border bg-white p-5 transition-colors hover:border-foreground/30 active:bg-muted/40"
     >
       <p className="text-2xl font-semibold text-foreground">{value}</p>
       <p className="text-sm text-muted-foreground">{label}</p>
@@ -123,11 +123,11 @@ export default async function DashboardPage() {
           Need to move someone between locations?{" "}
           <Link
             href="/dashboard/board"
-            className="font-medium text-foreground underline underline-offset-4"
+            className="inline-flex min-h-11 items-center font-medium text-foreground underline underline-offset-4 md:min-h-0"
           >
             Open the board
           </Link>{" "}
-          and drag their card to a new location.
+          to reassign them.
         </p>
       </div>
     );
@@ -170,9 +170,15 @@ export default async function DashboardPage() {
               ) : null}
               <Link
                 href="/dashboard/clients"
-                className="mt-3 inline-block text-sm font-medium text-foreground underline underline-offset-4"
+                className="mt-3 inline-flex min-h-11 items-center text-sm font-medium text-foreground underline underline-offset-4 md:min-h-0"
               >
                 View clients
+              </Link>
+              <Link
+                href="/dashboard/checklists"
+                className="mt-1 inline-flex min-h-11 items-center text-sm font-medium text-foreground underline underline-offset-4 md:min-h-0"
+              >
+                Open checklists
               </Link>
             </li>
           ))}

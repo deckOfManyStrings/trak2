@@ -62,7 +62,20 @@ export default async function LocationsPage() {
         </p>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
+      <div className="grid gap-6 lg:grid-cols-[1fr_320px] lg:gap-8">
+        <div className="order-first h-fit rounded-lg border bg-white p-4 lg:order-last">
+          <h2 className="mb-3 text-sm font-semibold">Add a location</h2>
+          {session.profile.plan === "free" &&
+          (locations ?? []).length >= FREE_PLAN_LIMITS.locations ? (
+            <p className="text-sm text-muted-foreground">
+              You&apos;ve reached the free plan limit of{" "}
+              {FREE_PLAN_LIMITS.locations} location. Upgrade to add more.
+            </p>
+          ) : (
+            <CreateLocationForm />
+          )}
+        </div>
+
         <ul className="space-y-3">
           {(locations ?? []).length === 0 ? (
             <li className="rounded-lg border border-dashed bg-white p-6 text-center text-sm text-muted-foreground">
@@ -79,19 +92,6 @@ export default async function LocationsPage() {
             ))
           )}
         </ul>
-
-        <div className="h-fit rounded-lg border bg-white p-4">
-          <h2 className="mb-3 text-sm font-semibold">Add a location</h2>
-          {session.profile.plan === "free" &&
-          (locations ?? []).length >= FREE_PLAN_LIMITS.locations ? (
-            <p className="text-sm text-muted-foreground">
-              You&apos;ve reached the free plan limit of{" "}
-              {FREE_PLAN_LIMITS.locations} location. Upgrade to add more.
-            </p>
-          ) : (
-            <CreateLocationForm />
-          )}
-        </div>
       </div>
     </div>
   );

@@ -12,9 +12,9 @@ export const CHECKLIST_VALUES: {
   { value: "N/A", label: "N/A", description: "Not applicable" },
 ];
 
-// Seeded for every new admin by the handle_new_user trigger (see
-// 0008_checklists.sql) and used again here to self-heal accounts that
-// signed up before that migration existed.
+// Seeded for every new client by the clients_seed_objectives trigger
+// (see 0017_per_client_objectives.sql). Kept here so the app and the
+// migration stay in sync if the defaults ever change.
 export const DEFAULT_OBJECTIVE_TITLES = [
   "Ask for help",
   "Follow outing directions",

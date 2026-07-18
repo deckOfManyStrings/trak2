@@ -17,7 +17,9 @@ export default async function DashboardLayout({
   return (
     <div className="min-h-screen bg-muted/20">
       <AppHeader role={session.profile.role} email={session.email} />
-      <main className="mx-auto max-w-6xl px-6 py-8">{children}</main>
+      <main className="mx-auto max-w-6xl px-4 py-4 pb-24 md:px-6 md:py-8 md:pb-8">
+        {children}
+      </main>
     </div>
   );
 }

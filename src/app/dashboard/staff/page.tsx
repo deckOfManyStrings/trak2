@@ -46,7 +46,24 @@ export default async function StaffPage() {
         </p>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
+      <div className="grid gap-6 lg:grid-cols-[1fr_320px] lg:gap-8">
+        <div className="order-first h-fit rounded-lg border bg-white p-4 lg:order-last">
+          <h2 className="mb-3 text-sm font-semibold">Invite staff</h2>
+          {typedLocations.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              Create a location first so you can assign new staff to it.
+            </p>
+          ) : session.profile.plan === "free" &&
+            typedStaff.length >= FREE_PLAN_LIMITS.staff ? (
+            <p className="text-sm text-muted-foreground">
+              You&apos;ve reached the free plan limit of{" "}
+              {FREE_PLAN_LIMITS.staff} staff members. Upgrade to add more.
+            </p>
+          ) : (
+            <InviteStaffForm locations={typedLocations} />
+          )}
+        </div>
+
         <ul className="space-y-3">
           {typedStaff.length === 0 ? (
             <li className="rounded-lg border border-dashed bg-white p-6 text-center text-sm text-muted-foreground">
@@ -63,23 +80,6 @@ export default async function StaffPage() {
             ))
           )}
         </ul>
-
-        <div className="h-fit rounded-lg border bg-white p-4">
-          <h2 className="mb-3 text-sm font-semibold">Invite staff</h2>
-          {typedLocations.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              Create a location first so you can assign new staff to it.
-            </p>
-          ) : session.profile.plan === "free" &&
-            typedStaff.length >= FREE_PLAN_LIMITS.staff ? (
-            <p className="text-sm text-muted-foreground">
-              You&apos;ve reached the free plan limit of{" "}
-              {FREE_PLAN_LIMITS.staff} staff members. Upgrade to add more.
-            </p>
-          ) : (
-            <InviteStaffForm locations={typedLocations} />
-          )}
-        </div>
       </div>
     </div>
   );

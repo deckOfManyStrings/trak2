@@ -29,7 +29,7 @@ export default async function ChecklistsPage() {
   );
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 md:space-y-8">
       <div>
         <h1 className="text-xl font-semibold">Checklists</h1>
         <p className="text-sm text-muted-foreground">
@@ -47,10 +47,10 @@ export default async function ChecklistsPage() {
             <li key={client.id}>
               <Link
                 href={`/dashboard/checklists/${client.id}`}
-                className="flex items-center justify-between gap-4 rounded-lg border bg-white p-4 transition-colors hover:border-foreground/30"
+                className="flex min-h-16 items-center justify-between gap-4 rounded-lg border bg-white p-4 transition-colors hover:border-foreground/30 active:bg-muted/40"
               >
                 <div className="min-w-0">
-                  <p className="truncate font-medium text-foreground">
+                  <p className="truncate text-base font-medium text-foreground">
                     {client.full_name}
                   </p>
                   <p className="truncate text-sm text-muted-foreground">
@@ -58,8 +58,8 @@ export default async function ChecklistsPage() {
                       "Unassigned"}
                   </p>
                 </div>
-                <span className="shrink-0 text-sm font-medium text-muted-foreground underline underline-offset-4">
-                  Open checklist
+                <span className="shrink-0 text-muted-foreground" aria-hidden>
+                  &rarr;
                 </span>
               </Link>
             </li>

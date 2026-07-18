@@ -30,6 +30,17 @@ export async function createClientRecord(
 
   const fullName = String(formData.get("fullName") ?? "").trim();
   const locationId = String(formData.get("locationId") ?? "");
+  const ucid = String(formData.get("ucid") ?? "").trim();
+  const allergies = String(formData.get("allergies") ?? "").trim();
+  const serviceCoordinatorName = String(
+    formData.get("serviceCoordinatorName") ?? "",
+  ).trim();
+  const serviceCoordinatorPhone = String(
+    formData.get("serviceCoordinatorPhone") ?? "",
+  ).trim();
+  const serviceCoordinatorEmail = String(
+    formData.get("serviceCoordinatorEmail") ?? "",
+  ).trim();
 
   if (!fullName) {
     return { error: "Client name is required." };
@@ -58,6 +69,11 @@ export async function createClientRecord(
     owner_id: session.userId,
     location_id: locationId,
     full_name: fullName,
+    ucid: ucid || null,
+    allergies: allergies || null,
+    service_coordinator_name: serviceCoordinatorName || null,
+    service_coordinator_phone: serviceCoordinatorPhone || null,
+    service_coordinator_email: serviceCoordinatorEmail || null,
   });
 
   if (error) {
@@ -71,10 +87,10 @@ export async function createClientRecord(
 }
 
 /**
- * Updates a client's demographic fields (name, DOB, admission date). These
- * feed the Annual Assessment Report header, so both admins and staff
- * assigned to the client's location may edit them - enforced by the clients
- * RLS update policy, same as setClientStatus below.
+ * Updates a client's profile fields (name, DOB, admission date, UCID,
+ * allergies, service coordinator). Both admins and staff assigned to the
+ * client's location may edit them - enforced by the clients RLS update
+ * policy, same as setClientStatus below.
  */
 export async function updateClientRecord(
   _prevState: ActionState,
@@ -89,6 +105,17 @@ export async function updateClientRecord(
   const fullName = String(formData.get("fullName") ?? "").trim();
   const dateOfBirth = String(formData.get("dateOfBirth") ?? "").trim();
   const dateOfAdmission = String(formData.get("dateOfAdmission") ?? "").trim();
+  const ucid = String(formData.get("ucid") ?? "").trim();
+  const allergies = String(formData.get("allergies") ?? "").trim();
+  const serviceCoordinatorName = String(
+    formData.get("serviceCoordinatorName") ?? "",
+  ).trim();
+  const serviceCoordinatorPhone = String(
+    formData.get("serviceCoordinatorPhone") ?? "",
+  ).trim();
+  const serviceCoordinatorEmail = String(
+    formData.get("serviceCoordinatorEmail") ?? "",
+  ).trim();
 
   if (!clientId || !fullName) {
     return { error: "Client name is required." };
@@ -103,6 +130,11 @@ export async function updateClientRecord(
       full_name: fullName,
       date_of_birth: dateOfBirth || null,
       date_of_admission: dateOfAdmission || null,
+      ucid: ucid || null,
+      allergies: allergies || null,
+      service_coordinator_name: serviceCoordinatorName || null,
+      service_coordinator_phone: serviceCoordinatorPhone || null,
+      service_coordinator_email: serviceCoordinatorEmail || null,
     })
     .eq("id", clientId);
 

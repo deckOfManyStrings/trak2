@@ -42,8 +42,31 @@ export default async function ClientsPage() {
       </div>
 
       <div
-        className={isAdmin ? "grid gap-8 lg:grid-cols-[1fr_320px]" : undefined}
+        className={
+          isAdmin
+            ? "grid gap-6 lg:grid-cols-[1fr_320px] lg:gap-8"
+            : undefined
+        }
       >
+        {isAdmin ? (
+          <div className="order-first h-fit rounded-lg border bg-white p-4 lg:order-last">
+            <h2 className="mb-3 text-sm font-semibold">Add a client</h2>
+            {typedLocations.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                Create a location first.
+              </p>
+            ) : session.profile.plan === "free" &&
+              typedClients.length >= FREE_PLAN_LIMITS.clients ? (
+              <p className="text-sm text-muted-foreground">
+                You&apos;ve reached the free plan limit of{" "}
+                {FREE_PLAN_LIMITS.clients} clients. Upgrade to add more.
+              </p>
+            ) : (
+              <CreateClientForm locations={typedLocations} />
+            )}
+          </div>
+        ) : null}
+
         <ul className="space-y-3">
           {typedClients.length === 0 ? (
             <li className="rounded-lg border border-dashed bg-white p-6 text-center text-sm text-muted-foreground">
@@ -64,25 +87,6 @@ export default async function ClientsPage() {
             ))
           )}
         </ul>
-
-        {isAdmin ? (
-          <div className="h-fit rounded-lg border bg-white p-4">
-            <h2 className="mb-3 text-sm font-semibold">Add a client</h2>
-            {typedLocations.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                Create a location first.
-              </p>
-            ) : session.profile.plan === "free" &&
-              typedClients.length >= FREE_PLAN_LIMITS.clients ? (
-              <p className="text-sm text-muted-foreground">
-                You&apos;ve reached the free plan limit of{" "}
-                {FREE_PLAN_LIMITS.clients} clients. Upgrade to add more.
-              </p>
-            ) : (
-              <CreateClientForm locations={typedLocations} />
-            )}
-          </div>
-        ) : null}
       </div>
     </div>
   );

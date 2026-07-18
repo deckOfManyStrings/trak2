@@ -48,7 +48,7 @@ export async function getTrackedObjectiveStats(
   periodEnd: string,
 ): Promise<ObjectiveStat[]> {
   const [{ data: objectives }, { data: entries }] = await Promise.all([
-    supabase.from("objectives").select("*"),
+    supabase.from("objectives").select("*").eq("client_id", clientId),
     supabase
       .from("checklist_entries")
       .select("*")

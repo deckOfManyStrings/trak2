@@ -44,7 +44,7 @@ export default async function AnnualReportListPage({ params }: PageProps) {
           <p className="text-sm text-muted-foreground">
             <Link
               href={`/dashboard/checklists/${clientId}`}
-              className="underline underline-offset-4 hover:text-foreground"
+              className="inline-flex min-h-11 items-center underline underline-offset-4 hover:text-foreground md:min-h-0"
             >
               {typedClient.full_name}
             </Link>{" "}
@@ -55,7 +55,7 @@ export default async function AnnualReportListPage({ params }: PageProps) {
 
         <Link
           href={`/dashboard/checklists/${clientId}/annual-report/new`}
-          className={cn(buttonVariants({ size: "sm" }))}
+          className={cn(buttonVariants(), "w-full sm:w-auto")}
         >
           New report
         </Link>
@@ -71,7 +71,7 @@ export default async function AnnualReportListPage({ params }: PageProps) {
             <li key={report.id}>
               <Link
                 href={`/dashboard/checklists/${clientId}/annual-report/${report.id}`}
-                className="flex items-center justify-between rounded-lg border bg-white p-4 hover:bg-muted/40"
+                className="flex min-h-16 items-center justify-between rounded-lg border bg-white p-4 hover:bg-muted/40 active:bg-muted/40"
               >
                 <div>
                   <p className="font-medium text-foreground">

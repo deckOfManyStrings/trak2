@@ -105,6 +105,17 @@ export function ChecklistGrid({
     });
   };
 
+  if (objectives.length === 0) {
+    return (
+      <div className="space-y-3">
+        <p className="rounded-lg border bg-white p-4 text-sm text-muted-foreground">
+          No objectives yet. Use Manage objectives to add one and start
+          tracking this client.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-3">
       {error ? <p className="text-sm text-destructive">{error}</p> : null}

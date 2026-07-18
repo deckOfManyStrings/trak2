@@ -89,8 +89,8 @@ export function LocationRow({
   }
 
   return (
-    <li className="flex items-center justify-between rounded-lg border bg-white p-4">
-      <div>
+    <li className="flex flex-col gap-4 rounded-lg border bg-white p-4 sm:flex-row sm:items-start sm:justify-between">
+      <div className="min-w-0">
         <p className="font-medium text-foreground">{location.name}</p>
         {location.address ? (
           <p className="text-sm text-muted-foreground">{location.address}</p>
@@ -110,16 +110,20 @@ export function LocationRow({
           <p className="mt-1 text-xs text-destructive">{deleteState.error}</p>
         ) : null}
       </div>
-      <div className="flex shrink-0 gap-2">
-        <Button size="sm" variant="outline" onClick={() => setEditing(true)}>
+      <div className="flex flex-col gap-2 sm:shrink-0 sm:flex-row">
+        <Button
+          variant="outline"
+          className="w-full sm:w-auto"
+          onClick={() => setEditing(true)}
+        >
           Edit
         </Button>
-        <form ref={deleteFormRef} action={deleteAction}>
+        <form ref={deleteFormRef} action={deleteAction} className="w-full sm:w-auto">
           <input type="hidden" name="id" value={location.id} />
           <Button
             type="button"
-            size="sm"
             variant="destructive"
+            className="w-full sm:w-auto"
             disabled={deletePending}
             onClick={() => {
               if (

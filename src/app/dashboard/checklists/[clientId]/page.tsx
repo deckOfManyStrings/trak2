@@ -1,15 +1,13 @@
+import { ChecklistDayView } from "@/app/dashboard/checklists/[clientId]/checklist-day-view";
 import { ChecklistGrid } from "@/app/dashboard/checklists/[clientId]/checklist-grid";
-import { MonthPicker } from "@/app/dashboard/checklists/[clientId]/month-picker";
+import { ManageObjectives } from "@/app/dashboard/checklists/[clientId]/manage-objectives";
 import { monthDateRange, normalizeMonthParam } from "@/app/dashboard/checklists/data";
-import { getOrCreateObjectives } from "@/app/dashboard/checklists/objectives";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { getClientObjectives } from "@/app/dashboard/checklists/objectives";
 import { createClient } from "@/utils/supabase/server";
 import { getSessionProfile } from "@/utils/supabase/session";
 import type { ChecklistEntry, Client } from "@/types/db";
 import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
-import Link from "next/link";
 
 type PageProps = {
   params: Promise<{ clientId: string }>;
@@ -41,7 +39,7 @@ export default async function ClientChecklistPage({
   if (!client) notFound();
 
   const typedClient = client as Client;
-  const objectives = await getOrCreateObjectives(supabase, typedClient.owner_id);
+  const objectives = await getClientObjectives(supabase, clientId);
 
   const { start, end } = monthDateRange(month);
   const { data: entries } = await supabase
@@ -53,47 +51,36 @@ export default async function ClientChecklistPage({
 
   const currentUserName =
     session.profile.full_name || session.profile.email || "You";
+  const typedEntries = (entries ?? []) as ChecklistEntry[];
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <p className="text-sm text-muted-foreground">
-            <Link
-              href="/dashboard/checklists"
-              className="underline underline-offset-4 hover:text-foreground"
-            >
-              Checklists
-            </Link>{" "}
-            / {typedClient.full_name}
-          </p>
-          <h1 className="text-xl font-semibold">{typedClient.full_name}</h1>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <MonthPicker clientId={clientId} month={month} />
-          <a
-            href={`/dashboard/checklists/${clientId}/export?month=${month}`}
-            className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
-          >
-            Export to Excel
-          </a>
-          <Link
-            href={`/dashboard/checklists/${clientId}/annual-report`}
-            className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
-          >
-            Annual Report
-          </Link>
-        </div>
-      </div>
-
-      <ChecklistGrid
+      <ManageObjectives
         clientId={clientId}
+        clientName={typedClient.full_name}
         month={month}
         objectives={objectives}
-        entries={(entries ?? []) as ChecklistEntry[]}
-        currentUserName={currentUserName}
       />
+
+      <div className="md:hidden">
+        <ChecklistDayView
+          clientId={clientId}
+          month={month}
+          objectives={objectives}
+          entries={typedEntries}
+          currentUserName={currentUserName}
+        />
+      </div>
+
+      <div className="hidden md:block">
+        <ChecklistGrid
+          clientId={clientId}
+          month={month}
+          objectives={objectives}
+          entries={typedEntries}
+          currentUserName={currentUserName}
+        />
+      </div>
     </div>
   );
 }
