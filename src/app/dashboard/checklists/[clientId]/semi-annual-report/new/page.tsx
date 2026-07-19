@@ -3,7 +3,7 @@ import {
   isValidDateParam,
   resolveReportPeriod,
 } from "@/app/dashboard/checklists/annual-report-stats";
-import { NewAnnualReportForm } from "@/app/dashboard/checklists/[clientId]/annual-report/new/new-annual-report-form";
+import { NewSemiAnnualReportForm } from "@/app/dashboard/checklists/[clientId]/semi-annual-report/new/new-semi-annual-report-form";
 import { ReportPeriodFields } from "@/app/dashboard/checklists/report-period-fields";
 import { createClient } from "@/utils/supabase/server";
 import { getSessionProfile } from "@/utils/supabase/session";
@@ -28,7 +28,7 @@ function todayParam(): string {
   ).padStart(2, "0")}`;
 }
 
-export default async function NewAnnualReportPage({
+export default async function NewSemiAnnualReportPage({
   params,
   searchParams,
 }: PageProps) {
@@ -43,7 +43,7 @@ export default async function NewAnnualReportPage({
     reviewDate,
     periodStart: search.periodStart,
     periodEnd: search.periodEnd,
-    defaultMonths: 12,
+    defaultMonths: 6,
   });
 
   const cookieStore = await cookies();
@@ -77,15 +77,15 @@ export default async function NewAnnualReportPage({
       <div>
         <p className="text-sm text-muted-foreground">
           <Link
-            href={`/dashboard/checklists/${clientId}/annual-report`}
+            href={`/dashboard/checklists/${clientId}/semi-annual-report`}
             className="underline underline-offset-4 hover:text-foreground"
           >
-            Annual Reports
+            Semi-Annual Reports
           </Link>{" "}
           / New
         </p>
         <h1 className="text-xl font-semibold">
-          New Annual Report for {typedClient.full_name}
+          New Semi-Annual Report for {typedClient.full_name}
         </h1>
         <p className="text-sm text-muted-foreground">
           {typedLocation?.name ?? "Unassigned"}
@@ -96,12 +96,12 @@ export default async function NewAnnualReportPage({
         reviewDate={reviewDate}
         periodStart={periodStart}
         periodEnd={periodEnd}
-        basePath={`/dashboard/checklists/${clientId}/annual-report/new`}
-        defaultMonths={12}
-        helperText="Defaults to the 12 months ending on the review date. Adjust the period to export a different range."
+        basePath={`/dashboard/checklists/${clientId}/semi-annual-report/new`}
+        defaultMonths={6}
+        helperText="Defaults to the 6 months ending on the review date. Adjust the period to export a different range."
       />
 
-      <NewAnnualReportForm
+      <NewSemiAnnualReportForm
         clientId={clientId}
         reviewDate={reviewDate}
         periodStart={periodStart}

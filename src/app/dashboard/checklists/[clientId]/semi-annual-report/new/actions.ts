@@ -15,11 +15,10 @@ export type ActionState = {
 };
 
 /**
- * Creates a new Annual Assessment Report. Objective ratings are recomputed
- * here from checklist_entries for the staff-selected period so a saved
- * report always reflects real tracked data.
+ * Creates a new Semi-Annual Assessment Report. Objective ratings are
+ * recomputed here from checklist_entries for the staff-selected period.
  */
-export async function createAnnualReport(
+export async function createSemiAnnualReport(
   _prevState: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
@@ -63,7 +62,7 @@ export async function createAnnualReport(
   );
 
   const { data: report, error: reportError } = await supabase
-    .from("annual_reports")
+    .from("semi_annual_reports")
     .insert({
       client_id: clientId,
       owner_id: typedClient.owner_id,
@@ -82,10 +81,10 @@ export async function createAnnualReport(
 
   if (stats.length > 0) {
     const { error: objectivesError } = await supabase
-      .from("annual_report_objectives")
+      .from("semi_annual_report_objectives")
       .insert(
         stats.map((stat) => ({
-          annual_report_id: report.id,
+          semi_annual_report_id: report.id,
           objective_id: stat.objective_id,
           objective_title: stat.title,
           yes_count: stat.yes_count,
@@ -103,5 +102,7 @@ export async function createAnnualReport(
     }
   }
 
-  redirect(`/dashboard/checklists/${clientId}/annual-report/${report.id}`);
+  redirect(
+    `/dashboard/checklists/${clientId}/semi-annual-report/${report.id}`,
+  );
 }

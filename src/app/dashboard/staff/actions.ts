@@ -167,6 +167,61 @@ export async function removeStaffFromLocation(
   return { success: true };
 }
 
+/**
+ * Updates a staff member's full_name. Admins only; target must be staff
+ * owned by the current admin. Never accepts role, owner_id, plan, or email.
+ */
+export async function updateStaffProfile(
+  _prevState: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const session = await requireAdmin();
+  if (!session) {
+    return { error: "Only admins can edit staff." };
+  }
+
+  const staffId = String(formData.get("staffId") ?? "");
+  const fullName = String(formData.get("fullName") ?? "").trim();
+
+  if (!staffId) {
+    return { error: "Missing staff id." };
+  }
+  if (!fullName) {
+    return { error: "Full name is required." };
+  }
+
+  const cookieStore = await cookies();
+  const supabase = createClient(cookieStore);
+
+  const { data: staffProfile } = await supabase
+    .from("profiles")
+    .select("id, owner_id, role")
+    .eq("id", staffId)
+    .single();
+
+  if (
+    !staffProfile ||
+    staffProfile.role !== "staff" ||
+    staffProfile.owner_id !== session.userId
+  ) {
+    return { error: "Staff member not found." };
+  }
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({ full_name: fullName })
+    .eq("id", staffId)
+    .eq("role", "staff")
+    .eq("owner_id", session.userId);
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath("/dashboard/staff");
+  return { success: true };
+}
+
 export async function revokeStaffAccess(
   _prevState: ActionState,
   formData: FormData,

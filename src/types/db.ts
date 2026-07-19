@@ -47,6 +47,7 @@ export type Client = {
 };
 
 export type ChecklistValue = "Y" | "N" | "H" | "NP" | "N/A";
+export type ObjectiveStatus = "active" | "retired";
 
 export type Objective = {
   id: string;
@@ -54,7 +55,12 @@ export type Objective = {
   client_id: string;
   title: string;
   position: number;
+  status: ObjectiveStatus;
   created_at: string;
+};
+
+export type ObjectiveWithEntryCount = Objective & {
+  entry_count: number;
 };
 
 export type ChecklistEntry = {
@@ -86,6 +92,58 @@ export type AnnualReport = {
 export type AnnualReportObjective = {
   id: string;
   annual_report_id: string;
+  objective_id: string | null;
+  objective_title: string;
+  yes_count: number;
+  no_count: number;
+  tracked_days: number;
+  rating_percent: number | null;
+  comments: string | null;
+  created_at: string;
+};
+
+export type SemiAnnualReport = {
+  id: string;
+  client_id: string;
+  owner_id: string;
+  review_date: string;
+  period_start: string;
+  period_end: string;
+  summary: string | null;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type SemiAnnualReportObjective = {
+  id: string;
+  semi_annual_report_id: string;
+  objective_id: string | null;
+  objective_title: string;
+  yes_count: number;
+  no_count: number;
+  tracked_days: number;
+  rating_percent: number | null;
+  comments: string | null;
+  created_at: string;
+};
+
+export type QuarterlyReport = {
+  id: string;
+  client_id: string;
+  owner_id: string;
+  review_date: string;
+  period_start: string;
+  period_end: string;
+  summary: string | null;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type QuarterlyReportObjective = {
+  id: string;
+  quarterly_report_id: string;
   objective_id: string | null;
   objective_title: string;
   yes_count: number;

@@ -192,6 +192,7 @@ export function ChecklistGrid({
                       <td
                         key={day}
                         className="min-w-16 border-l p-1 text-center text-xs text-muted-foreground"
+                        title={cell?.recordedByName ?? undefined}
                       >
                         {cell ? getInitials(cell.recordedByName) : ""}
                       </td>

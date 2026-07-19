@@ -5,6 +5,7 @@ import {
 } from "@/app/dashboard/dashboard-nav";
 import { isSuperAdminEmail } from "@/lib/super-admin";
 import type { UserRole } from "@/types/db";
+import Link from "next/link";
 
 type AppHeaderProps = {
   role: UserRole;
@@ -25,9 +26,18 @@ export function AppHeader({ role, email }: AppHeaderProps) {
             <DesktopNav role={role} isSuperAdmin={isSuperAdmin} />
           </div>
           <div className="flex items-center gap-3 md:gap-4">
-            <span className="hidden max-w-[12rem] truncate text-sm text-muted-foreground lg:inline">
+            <Link
+              href="/dashboard/profile"
+              className="hidden max-w-[12rem] truncate text-sm text-muted-foreground hover:text-foreground lg:inline"
+            >
               {email}
-            </span>
+            </Link>
+            <Link
+              href="/dashboard/profile"
+              className="min-h-11 px-2 text-sm font-medium text-muted-foreground hover:text-foreground md:min-h-0 md:px-0 lg:hidden"
+            >
+              Profile
+            </Link>
             <form action={signOut}>
               <button
                 type="submit"

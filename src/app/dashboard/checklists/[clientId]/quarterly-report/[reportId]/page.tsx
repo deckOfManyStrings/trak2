@@ -3,10 +3,10 @@ import { cn } from "@/lib/utils";
 import { createClient } from "@/utils/supabase/server";
 import { getSessionProfile } from "@/utils/supabase/session";
 import type {
-  AnnualReport,
-  AnnualReportObjective,
   Client,
   Location,
+  QuarterlyReport,
+  QuarterlyReportObjective,
 } from "@/types/db";
 import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
@@ -16,7 +16,9 @@ type PageProps = {
   params: Promise<{ clientId: string; reportId: string }>;
 };
 
-export default async function AnnualReportDetailPage({ params }: PageProps) {
+export default async function QuarterlyReportDetailPage({
+  params,
+}: PageProps) {
   const session = await getSessionProfile();
   if (!session) redirect("/");
 
@@ -28,7 +30,7 @@ export default async function AnnualReportDetailPage({ params }: PageProps) {
   const [{ data: client }, { data: report }] = await Promise.all([
     supabase.from("clients").select("*").eq("id", clientId).maybeSingle(),
     supabase
-      .from("annual_reports")
+      .from("quarterly_reports")
       .select("*")
       .eq("id", reportId)
       .eq("client_id", clientId)
@@ -37,7 +39,7 @@ export default async function AnnualReportDetailPage({ params }: PageProps) {
 
   if (!client || !report) notFound();
   const typedClient = client as Client;
-  const typedReport = report as AnnualReport;
+  const typedReport = report as QuarterlyReport;
 
   const [{ data: location }, { data: objectives }] = await Promise.all([
     supabase
@@ -46,13 +48,13 @@ export default async function AnnualReportDetailPage({ params }: PageProps) {
       .eq("id", typedClient.location_id)
       .maybeSingle(),
     supabase
-      .from("annual_report_objectives")
+      .from("quarterly_report_objectives")
       .select("*")
-      .eq("annual_report_id", reportId),
+      .eq("quarterly_report_id", reportId),
   ]);
 
   const typedLocation = location as Location | null;
-  const typedObjectives = (objectives ?? []) as AnnualReportObjective[];
+  const typedObjectives = (objectives ?? []) as QuarterlyReportObjective[];
 
   return (
     <div className="max-w-3xl space-y-6">
@@ -60,15 +62,15 @@ export default async function AnnualReportDetailPage({ params }: PageProps) {
         <div>
           <p className="text-sm text-muted-foreground">
             <Link
-              href={`/dashboard/checklists/${clientId}/annual-report`}
+              href={`/dashboard/checklists/${clientId}/quarterly-report`}
               className="underline underline-offset-4 hover:text-foreground"
             >
-              Annual Reports
+              Quarterly Reports
             </Link>{" "}
             / {typedReport.review_date}
           </p>
           <h1 className="text-xl font-semibold">
-            Annual Report &mdash; {typedClient.full_name}
+            Quarterly Report &mdash; {typedClient.full_name}
           </h1>
           <p className="text-sm text-muted-foreground">
             {typedLocation?.name ?? "Unassigned"} &middot; Review date{" "}
@@ -78,7 +80,7 @@ export default async function AnnualReportDetailPage({ params }: PageProps) {
         </div>
 
         <a
-          href={`/dashboard/checklists/${clientId}/annual-report/${reportId}/pdf`}
+          href={`/dashboard/checklists/${clientId}/quarterly-report/${reportId}/pdf`}
           className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
         >
           Download PDF
@@ -93,7 +95,9 @@ export default async function AnnualReportDetailPage({ params }: PageProps) {
       </div>
 
       <div className="space-y-3">
-        <h2 className="text-sm font-semibold">Objectives &amp; Annual Progress</h2>
+        <h2 className="text-sm font-semibold">
+          Objectives &amp; Quarterly Progress
+        </h2>
         {typedObjectives.length === 0 ? (
           <p className="rounded-lg border border-dashed bg-white p-4 text-sm text-muted-foreground">
             No objectives had tracked data for this review period.
@@ -119,7 +123,7 @@ export default async function AnnualReportDetailPage({ params }: PageProps) {
       </div>
 
       <div className="rounded-lg border bg-white p-4">
-        <h2 className="mb-1 text-sm font-semibold">Annual Summary</h2>
+        <h2 className="mb-1 text-sm font-semibold">Quarterly Summary</h2>
         <p className="text-sm text-muted-foreground">
           {typedReport.summary ?? "No summary provided."}
         </p>

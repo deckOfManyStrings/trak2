@@ -135,6 +135,7 @@ export async function createObjective(
     client_id: clientId,
     title,
     position: nextPosition,
+    status: "active",
   });
 
   if (error) {
@@ -146,8 +147,120 @@ export async function createObjective(
 }
 
 /**
- * Removes one objective from a client's checklist. Cascade-deletes that
- * client's daily marks for the objective. Access is enforced by RLS.
+ * Renames an objective. Marks stay attached to the same id.
+ */
+export async function updateObjective(
+  _prevState: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const session = await getSessionProfile();
+  if (!session) {
+    return { error: "You must be signed in." };
+  }
+
+  const clientId = String(formData.get("clientId") ?? "");
+  const objectiveId = String(formData.get("objectiveId") ?? "");
+  const title = String(formData.get("title") ?? "").trim();
+
+  if (!clientId || !objectiveId) {
+    return { error: "Missing objective." };
+  }
+  if (!title) {
+    return { error: "Objective title is required." };
+  }
+
+  const cookieStore = await cookies();
+  const supabase = createClient(cookieStore);
+
+  const { error } = await supabase
+    .from("objectives")
+    .update({ title })
+    .eq("id", objectiveId)
+    .eq("client_id", clientId);
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath(`/dashboard/checklists/${clientId}`);
+  return { success: true };
+}
+
+/**
+ * Hides an objective from the daily checklist while keeping all marks.
+ */
+export async function retireObjective(
+  _prevState: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  return setObjectiveStatus(formData, "retired");
+}
+
+/**
+ * Restores a retired objective to the daily checklist.
+ */
+export async function reactivateObjective(
+  _prevState: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  return setObjectiveStatus(formData, "active");
+}
+
+/**
+ * Retires or reactivates based on form field nextStatus. Used by the
+ * manage panel so one useActionState can handle both directions.
+ */
+export async function toggleObjectiveStatus(
+  _prevState: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const nextStatus = String(formData.get("nextStatus") ?? "");
+  if (nextStatus === "retired") {
+    return setObjectiveStatus(formData, "retired");
+  }
+  if (nextStatus === "active") {
+    return setObjectiveStatus(formData, "active");
+  }
+  return { error: "Invalid status change." };
+}
+
+async function setObjectiveStatus(
+  formData: FormData,
+  status: "active" | "retired",
+): Promise<ActionState> {
+  const session = await getSessionProfile();
+  if (!session) {
+    return { error: "You must be signed in." };
+  }
+
+  const clientId = String(formData.get("clientId") ?? "");
+  const objectiveId = String(formData.get("objectiveId") ?? "");
+
+  if (!clientId || !objectiveId) {
+    return { error: "Missing objective." };
+  }
+
+  const cookieStore = await cookies();
+  const supabase = createClient(cookieStore);
+
+  const { error } = await supabase
+    .from("objectives")
+    .update({ status })
+    .eq("id", objectiveId)
+    .eq("client_id", clientId);
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath(`/dashboard/checklists/${clientId}`);
+  return { success: true };
+}
+
+/**
+ * Permanently removes an objective and cascade-deletes its daily marks.
+ * Prefer retiring when the skill is simply no longer tracked. Access is
+ * enforced by RLS; the UI requires a stronger confirm when marks exist.
  */
 export async function deleteObjective(
   _prevState: ActionState,
@@ -167,6 +280,28 @@ export async function deleteObjective(
 
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
+
+  const { count, error: countError } = await supabase
+    .from("checklist_entries")
+    .select("id", { count: "exact", head: true })
+    .eq("client_id", clientId)
+    .eq("objective_id", objectiveId);
+
+  if (countError) {
+    return { error: countError.message };
+  }
+
+  const entryCount = count ?? 0;
+  if (entryCount > 0) {
+    const confirmed = String(formData.get("confirmDelete") ?? "") === "1";
+    if (!confirmed) {
+      return {
+        error: `This objective has ${entryCount} daily mark${
+          entryCount === 1 ? "" : "s"
+        }. Retire it to keep history, or confirm permanent delete.`,
+      };
+    }
+  }
 
   const { error } = await supabase
     .from("objectives")

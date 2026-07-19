@@ -1,6 +1,9 @@
 "use client";
 
-import { createAnnualReport, type ActionState } from "@/app/dashboard/checklists/[clientId]/annual-report/new/actions";
+import {
+  createQuarterlyReport,
+  type ActionState,
+} from "@/app/dashboard/checklists/[clientId]/quarterly-report/new/actions";
 import type { ObjectiveStat } from "@/app/dashboard/checklists/annual-report-stats";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -9,7 +12,7 @@ import { useActionState } from "react";
 
 const initialState: ActionState = {};
 
-type NewAnnualReportFormProps = {
+type NewQuarterlyReportFormProps = {
   clientId: string;
   reviewDate: string;
   periodStart: string;
@@ -17,15 +20,15 @@ type NewAnnualReportFormProps = {
   stats: ObjectiveStat[];
 };
 
-export function NewAnnualReportForm({
+export function NewQuarterlyReportForm({
   clientId,
   reviewDate,
   periodStart,
   periodEnd,
   stats,
-}: NewAnnualReportFormProps) {
+}: NewQuarterlyReportFormProps) {
   const [state, formAction, pending] = useActionState(
-    createAnnualReport,
+    createQuarterlyReport,
     initialState,
   );
 
@@ -37,7 +40,9 @@ export function NewAnnualReportForm({
       <input type="hidden" name="periodEnd" value={periodEnd} />
 
       <div className="space-y-3">
-        <h2 className="text-sm font-semibold">Objectives &amp; Annual Progress</h2>
+        <h2 className="text-sm font-semibold">
+          Objectives &amp; Quarterly Progress
+        </h2>
         {stats.length === 0 ? (
           <p className="rounded-lg border border-dashed bg-white p-4 text-sm text-muted-foreground">
             No objectives have tracked checklist data for this client in the
@@ -63,7 +68,7 @@ export function NewAnnualReportForm({
                 <Textarea
                   id={`comment-${stat.objective_id}`}
                   name={`comment-${stat.objective_id}`}
-                  placeholder="Summarize progress on this objective for the period"
+                  placeholder="Summarize progress on this objective for the quarter"
                   rows={3}
                 />
               </div>
@@ -73,11 +78,11 @@ export function NewAnnualReportForm({
       </div>
 
       <div className="space-y-1.5">
-        <Label htmlFor="summary">Annual summary</Label>
+        <Label htmlFor="summary">Quarterly summary</Label>
         <Textarea
           id="summary"
           name="summary"
-          placeholder="Overall summary of the client's year, including transportation notes if relevant"
+          placeholder="Overall summary of the client's quarter, including transportation notes if relevant"
           rows={5}
         />
       </div>

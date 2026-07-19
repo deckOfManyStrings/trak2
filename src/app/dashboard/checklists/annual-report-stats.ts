@@ -12,26 +12,122 @@ export type ObjectiveStat = {
   rating_percent: number | null;
 };
 
+function toDateString(date: Date): string {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(
+    date.getDate(),
+  ).padStart(2, "0")}`;
+}
+
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+export function isValidDateParam(value: string | undefined | null): value is string {
+  return Boolean(value && DATE_RE.test(value));
+}
+
 /**
- * The rolling 12-month window used to compute one Annual Assessment
- * Report's objective ratings: the year ending on (and including) the date
- * of the review meeting.
+ * Rolling window ending on (and including) reviewDate. Used as the default
+ * when staff have not picked an explicit period start/end.
  */
-export function annualReportPeriod(reviewDate: string): {
+export function rollingReportPeriod(
+  reviewDate: string,
+  months: number,
+): {
   periodStart: string;
   periodEnd: string;
 } {
   const end = new Date(`${reviewDate}T00:00:00`);
   const start = new Date(end);
-  start.setFullYear(start.getFullYear() - 1);
+  if (months === 12) {
+    start.setFullYear(start.getFullYear() - 1);
+  } else {
+    start.setMonth(start.getMonth() - months);
+  }
   start.setDate(start.getDate() + 1);
 
-  const toDateString = (date: Date) =>
-    `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(
-      date.getDate(),
-    ).padStart(2, "0")}`;
-
   return { periodStart: toDateString(start), periodEnd: reviewDate };
+}
+
+/** @deprecated Prefer rollingReportPeriod(reviewDate, 12) */
+export function annualReportPeriod(reviewDate: string) {
+  return rollingReportPeriod(reviewDate, 12);
+}
+
+/** @deprecated Prefer rollingReportPeriod(reviewDate, 6) */
+export function semiAnnualReportPeriod(reviewDate: string) {
+  return rollingReportPeriod(reviewDate, 6);
+}
+
+export function quarterlyReportPeriod(reviewDate: string) {
+  return rollingReportPeriod(reviewDate, 3);
+}
+
+/**
+ * Resolves the period used for preview/stats on the new-report page.
+ * Explicit periodStart/periodEnd from the URL win; otherwise defaults to a
+ * rolling window ending on the review date.
+ */
+export function resolveReportPeriod(options: {
+  reviewDate: string;
+  periodStart?: string;
+  periodEnd?: string;
+  defaultMonths: number;
+}): {
+  reviewDate: string;
+  periodStart: string;
+  periodEnd: string;
+} {
+  const { reviewDate, defaultMonths } = options;
+  const defaults = rollingReportPeriod(reviewDate, defaultMonths);
+
+  if (
+    isValidDateParam(options.periodStart) &&
+    isValidDateParam(options.periodEnd) &&
+    options.periodStart <= options.periodEnd
+  ) {
+    return {
+      reviewDate,
+      periodStart: options.periodStart,
+      periodEnd: options.periodEnd,
+    };
+  }
+
+  return { reviewDate, ...defaults };
+}
+
+/**
+ * Validates the review + period dates submitted when generating a report.
+ */
+export function parseSubmittedReportDates(formData: FormData):
+  | {
+      ok: true;
+      reviewDate: string;
+      periodStart: string;
+      periodEnd: string;
+    }
+  | { ok: false; error: string } {
+  const reviewDate = String(formData.get("reviewDate") ?? "");
+  const periodStart = String(formData.get("periodStart") ?? "");
+  const periodEnd = String(formData.get("periodEnd") ?? "");
+
+  if (
+    !isValidDateParam(reviewDate) ||
+    !isValidDateParam(periodStart) ||
+    !isValidDateParam(periodEnd)
+  ) {
+    return {
+      ok: false,
+      error: "Review date, period start, and period end are required.",
+    };
+  }
+
+  if (periodStart > periodEnd) {
+    return {
+      ok: false,
+      error: "Period start must be on or before period end.",
+    };
+  }
+
+  return { ok: true, reviewDate, periodStart, periodEnd };
 }
 
 /**

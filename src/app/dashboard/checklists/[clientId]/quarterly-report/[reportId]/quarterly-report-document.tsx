@@ -1,14 +1,14 @@
 import type {
-  AnnualReport,
-  AnnualReportObjective,
   Client,
   Location,
+  QuarterlyReport,
+  QuarterlyReportObjective,
 } from "@/types/db";
 import { Document, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
 
-type AnnualReportDocumentProps = {
-  report: AnnualReport;
-  objectives: AnnualReportObjective[];
+type QuarterlyReportDocumentProps = {
+  report: QuarterlyReport;
+  objectives: QuarterlyReportObjective[];
   client: Client;
   location: Location | null;
 };
@@ -100,19 +100,21 @@ function formatDate(value: string | null): string {
 
 const SIGNATURE_ROW_COUNT = 4;
 
-export function AnnualReportDocument({
+export function QuarterlyReportDocument({
   report,
   objectives,
   client,
   location,
-}: AnnualReportDocumentProps) {
+}: QuarterlyReportDocumentProps) {
   const exportYear = new Date(report.created_at).getFullYear();
   const footerLabel = `${location?.name ?? "Care Center"} \u2014 ${client.full_name}`;
 
   return (
     <Document>
       <Page size="LETTER" style={styles.page}>
-        <Text style={styles.title}>Annual Assessment Report {exportYear}</Text>
+        <Text style={styles.title}>
+          Quarterly Assessment Report {exportYear}
+        </Text>
 
         <View>
           <Text style={styles.headerField}>
@@ -154,7 +156,9 @@ export function AnnualReportDocument({
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Objectives &amp; Annual Progress</Text>
+          <Text style={styles.sectionTitle}>
+            Objectives &amp; Quarterly Progress
+          </Text>
           {objectives.length === 0 ? (
             <Text style={styles.emptyState}>
               No objectives were tracked for this client during the review
@@ -182,7 +186,7 @@ export function AnnualReportDocument({
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Annual Summary</Text>
+          <Text style={styles.sectionTitle}>Quarterly Summary</Text>
           {report.summary ? (
             <Text style={styles.paragraph}>{report.summary}</Text>
           ) : (

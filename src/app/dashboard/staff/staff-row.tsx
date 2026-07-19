@@ -4,11 +4,14 @@ import {
   assignStaffToLocation,
   removeStaffFromLocation,
   revokeStaffAccess,
+  updateStaffProfile,
   type ActionState,
 } from "@/app/dashboard/staff/actions";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import type { Location, Profile } from "@/types/db";
-import { useActionState, useRef, useState, useTransition } from "react";
+import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 
 const initialState: ActionState = {};
 
@@ -27,11 +30,22 @@ type StaffRowProps = {
 export function StaffRow({ staff, currentLocationId, locations }: StaffRowProps) {
   const [isPending, startTransition] = useTransition();
   const [assignError, setAssignError] = useState<string | null>(null);
+  const [editing, setEditing] = useState(false);
+  const [updateState, updateAction, updatePending] = useActionState(
+    updateStaffProfile,
+    initialState,
+  );
   const [revokeState, revokeAction, revokePending] = useActionState(
     revokeStaffAccess,
     initialState,
   );
   const revokeFormRef = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    if (updateState.success) {
+      setEditing(false);
+    }
+  }, [updateState]);
 
   const handleLocationChange = (value: string) => {
     setAssignError(null);
@@ -45,6 +59,43 @@ export function StaffRow({ staff, currentLocationId, locations }: StaffRowProps)
       }
     });
   };
+
+  if (editing) {
+    return (
+      <li className="rounded-lg border bg-white p-4">
+        <form action={updateAction} className="space-y-3">
+          <input type="hidden" name="staffId" value={staff.id} />
+          <div className="space-y-1.5">
+            <Label htmlFor={`edit-name-${staff.id}`}>Full name</Label>
+            <Input
+              id={`edit-name-${staff.id}`}
+              name="fullName"
+              defaultValue={staff.full_name ?? ""}
+              placeholder="Jamie Lee"
+              required
+            />
+          </div>
+          <p className="truncate text-sm text-muted-foreground">{staff.email}</p>
+          {updateState.error ? (
+            <p className="text-sm text-destructive">{updateState.error}</p>
+          ) : null}
+          <div className="flex gap-2">
+            <Button type="submit" size="sm" disabled={updatePending}>
+              Save
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() => setEditing(false)}
+            >
+              Cancel
+            </Button>
+          </div>
+        </form>
+      </li>
+    );
+  }
 
   return (
     <li className="flex flex-col gap-4 rounded-lg border bg-white p-4 sm:flex-row sm:items-start sm:justify-between">
@@ -65,6 +116,16 @@ export function StaffRow({ staff, currentLocationId, locations }: StaffRowProps)
       </div>
 
       <div className="flex flex-col gap-2 sm:shrink-0 sm:flex-row sm:items-center">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="w-full sm:w-auto"
+          onClick={() => setEditing(true)}
+        >
+          Edit
+        </Button>
+
         <select
           value={currentLocationId ?? ""}
           disabled={isPending}

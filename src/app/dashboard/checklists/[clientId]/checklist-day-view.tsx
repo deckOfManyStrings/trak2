@@ -189,7 +189,10 @@ export function ChecklistDayView({
                   {objective.title}
                 </p>
                 {cell ? (
-                  <span className="shrink-0 text-xs text-muted-foreground">
+                  <span
+                    className="shrink-0 text-xs text-muted-foreground"
+                    title={cell.recordedByName ?? undefined}
+                  >
                     {getInitials(cell.recordedByName)}
                   </span>
                 ) : null}

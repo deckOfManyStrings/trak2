@@ -1,6 +1,9 @@
 "use client";
 
-import { createAnnualReport, type ActionState } from "@/app/dashboard/checklists/[clientId]/annual-report/new/actions";
+import {
+  createSemiAnnualReport,
+  type ActionState,
+} from "@/app/dashboard/checklists/[clientId]/semi-annual-report/new/actions";
 import type { ObjectiveStat } from "@/app/dashboard/checklists/annual-report-stats";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -9,7 +12,7 @@ import { useActionState } from "react";
 
 const initialState: ActionState = {};
 
-type NewAnnualReportFormProps = {
+type NewSemiAnnualReportFormProps = {
   clientId: string;
   reviewDate: string;
   periodStart: string;
@@ -17,15 +20,15 @@ type NewAnnualReportFormProps = {
   stats: ObjectiveStat[];
 };
 
-export function NewAnnualReportForm({
+export function NewSemiAnnualReportForm({
   clientId,
   reviewDate,
   periodStart,
   periodEnd,
   stats,
-}: NewAnnualReportFormProps) {
+}: NewSemiAnnualReportFormProps) {
   const [state, formAction, pending] = useActionState(
-    createAnnualReport,
+    createSemiAnnualReport,
     initialState,
   );
 
@@ -37,7 +40,9 @@ export function NewAnnualReportForm({
       <input type="hidden" name="periodEnd" value={periodEnd} />
 
       <div className="space-y-3">
-        <h2 className="text-sm font-semibold">Objectives &amp; Annual Progress</h2>
+        <h2 className="text-sm font-semibold">
+          Objectives &amp; Semi-Annual Progress
+        </h2>
         {stats.length === 0 ? (
           <p className="rounded-lg border border-dashed bg-white p-4 text-sm text-muted-foreground">
             No objectives have tracked checklist data for this client in the
@@ -73,11 +78,11 @@ export function NewAnnualReportForm({
       </div>
 
       <div className="space-y-1.5">
-        <Label htmlFor="summary">Annual summary</Label>
+        <Label htmlFor="summary">Semi-annual summary</Label>
         <Textarea
           id="summary"
           name="summary"
-          placeholder="Overall summary of the client's year, including transportation notes if relevant"
+          placeholder="Overall summary of the client's six-month period, including transportation notes if relevant"
           rows={5}
         />
       </div>
