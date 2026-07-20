@@ -70,6 +70,8 @@ function normalizeChecklistCell(raw: string): ChecklistValue | null {
   const upper = trimmed.toUpperCase();
   if (upper === "NA" || upper === "N.A." || upper === "N.A") return "N/A";
   if (upper === "N/A") return "N/A";
+  // Legacy exports used NP for "No program"; treat as Absent.
+  if (upper === "NP") return "A";
   if (isChecklistValue(upper)) return upper;
   return null;
 }

@@ -138,7 +138,7 @@ export function buildMonthlyChecklistSheet({
   sheet.getCell(row, Math.min(monthLabelCol + 4, lastCol)).font = { bold: true };
   row += 2;
 
-  sheet.getCell(row, LABEL_START).value = "NP: No Program";
+  sheet.getCell(row, LABEL_START).value = "A: Absent";
   sheet.getCell(row, LABEL_START).font = { italic: true, size: 9 };
   row += 2;
 

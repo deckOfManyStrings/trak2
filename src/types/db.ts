@@ -62,7 +62,7 @@ export type Client = {
   updated_at: string;
 };
 
-export type ChecklistValue = "Y" | "N" | "H" | "NP" | "N/A";
+export type ChecklistValue = "Y" | "N" | "H" | "A" | "N/A";
 export type ObjectiveStatus = "active" | "retired";
 
 export type Objective = {

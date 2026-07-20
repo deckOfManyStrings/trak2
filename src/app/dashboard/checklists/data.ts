@@ -8,7 +8,7 @@ export const CHECKLIST_VALUES: {
   { value: "Y", label: "Y", description: "Yes" },
   { value: "N", label: "N", description: "No" },
   { value: "H", label: "H", description: "Holiday" },
-  { value: "NP", label: "NP", description: "No program" },
+  { value: "A", label: "A", description: "Absent" },
   { value: "N/A", label: "N/A", description: "Not applicable" },
 ];
 
