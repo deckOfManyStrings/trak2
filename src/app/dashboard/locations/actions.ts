@@ -1,5 +1,9 @@
 "use server";
 
+import {
+  parseLocationServiceType,
+  parseRegionalCenter,
+} from "@/app/dashboard/locations/location-options";
 import { FREE_PLAN_LIMITS } from "@/lib/plan-limits";
 import { createClient } from "@/utils/supabase/server";
 import { getSessionProfile } from "@/utils/supabase/session";
@@ -19,6 +23,36 @@ async function requireAdmin() {
   return session;
 }
 
+function readLocationFields(formData: FormData) {
+  const serviceTypeRaw = String(formData.get("serviceType") ?? "").trim();
+  const serviceType = parseLocationServiceType(serviceTypeRaw);
+  if (serviceTypeRaw && !serviceType) {
+    return { error: "Choose a valid service type." } as const;
+  }
+
+  const regionalCenterRaw = String(formData.get("regionalCenter") ?? "").trim();
+  const regionalCenter = parseRegionalCenter(regionalCenterRaw);
+  if (regionalCenterRaw && !regionalCenter) {
+    return { error: "Choose a valid regional center." } as const;
+  }
+
+  return {
+    name: String(formData.get("name") ?? "").trim(),
+    contact_name: String(formData.get("contactName") ?? "").trim() || null,
+    contact_phone: String(formData.get("contactPhone") ?? "").trim() || null,
+    service_type: serviceType,
+    address: String(formData.get("address") ?? "").trim() || null,
+    vendor_name: String(formData.get("vendorName") ?? "").trim() || null,
+    vendor_number: String(formData.get("vendorNumber") ?? "").trim() || null,
+    regional_center: regionalCenter,
+    vendor_address: String(formData.get("vendorAddress") ?? "").trim() || null,
+    business_address:
+      String(formData.get("businessAddress") ?? "").trim() || null,
+    program_description:
+      String(formData.get("programDescription") ?? "").trim() || null,
+  } as const;
+}
+
 export async function createLocation(
   _prevState: ActionState,
   formData: FormData,
@@ -28,10 +62,12 @@ export async function createLocation(
     return { error: "Only admins can create locations." };
   }
 
-  const name = String(formData.get("name") ?? "").trim();
-  const address = String(formData.get("address") ?? "").trim();
+  const fields = readLocationFields(formData);
+  if ("error" in fields) {
+    return { error: fields.error };
+  }
 
-  if (!name) {
+  if (!fields.name) {
     return { error: "Location name is required." };
   }
 
@@ -53,8 +89,7 @@ export async function createLocation(
 
   const { error } = await supabase.from("locations").insert({
     owner_id: session.userId,
-    name,
-    address: address || null,
+    ...fields,
   });
 
   if (error) {
@@ -77,13 +112,12 @@ export async function updateLocation(
   }
 
   const id = String(formData.get("id") ?? "");
-  const name = String(formData.get("name") ?? "").trim();
-  const address = String(formData.get("address") ?? "").trim();
-  const programDescription = String(
-    formData.get("programDescription") ?? "",
-  ).trim();
+  const fields = readLocationFields(formData);
+  if ("error" in fields) {
+    return { error: fields.error };
+  }
 
-  if (!id || !name) {
+  if (!id || !fields.name) {
     return { error: "Location name is required." };
   }
 
@@ -92,11 +126,7 @@ export async function updateLocation(
 
   const { error } = await supabase
     .from("locations")
-    .update({
-      name,
-      address: address || null,
-      program_description: programDescription || null,
-    })
+    .update(fields)
     .eq("id", id)
     .eq("owner_id", session.userId);
 

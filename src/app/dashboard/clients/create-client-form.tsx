@@ -2,6 +2,10 @@
 
 import { createClientRecord, type ActionState } from "@/app/dashboard/clients/actions";
 import {
+  AddressFields,
+  PhoneInput,
+} from "@/components/contact-fields";
+import {
   EMERGENCY_CONTACT_RELATIONSHIPS,
   selectClassName,
 } from "@/app/dashboard/clients/emergency-contact";
@@ -10,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { Location } from "@/types/db";
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 
 const initialState: ActionState = {};
 
@@ -20,10 +24,12 @@ export function CreateClientForm({ locations }: { locations: Location[] }) {
     initialState,
   );
   const formRef = useRef<HTMLFormElement>(null);
+  const [fieldsKey, setFieldsKey] = useState(0);
 
   useEffect(() => {
     if (state.success) {
       formRef.current?.reset();
+      setFieldsKey((key) => key + 1);
     }
   }, [state.success]);
 
@@ -77,22 +83,17 @@ export function CreateClientForm({ locations }: { locations: Location[] }) {
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="client-ec-phone">Phone</Label>
-          <Input
+          <PhoneInput
+            key={`ec-phone-${fieldsKey}`}
             id="client-ec-phone"
             name="emergencyContactPhone"
-            type="tel"
-            placeholder="(555) 555-5555"
           />
         </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="client-ec-address">Address</Label>
-          <Textarea
-            id="client-ec-address"
-            name="emergencyContactAddress"
-            placeholder="123 Main St, City, ST 00000"
-            rows={2}
-          />
-        </div>
+        <AddressFields
+          key={`ec-address-${fieldsKey}`}
+          idPrefix="client-ec"
+          name="emergencyContactAddress"
+        />
         <div className="space-y-1.5">
           <Label htmlFor="client-ec-email">Email address</Label>
           <Input
@@ -116,11 +117,10 @@ export function CreateClientForm({ locations }: { locations: Location[] }) {
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="client-sc-phone">Phone</Label>
-          <Input
+          <PhoneInput
+            key={`sc-phone-${fieldsKey}`}
             id="client-sc-phone"
             name="serviceCoordinatorPhone"
-            type="tel"
-            placeholder="(555) 555-5555"
           />
         </div>
         <div className="space-y-1.5">

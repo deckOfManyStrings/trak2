@@ -8,6 +8,10 @@ import {
   type ActionState,
 } from "@/app/dashboard/clients/actions";
 import {
+  AddressFields,
+  PhoneInput,
+} from "@/components/contact-fields";
+import {
   EMERGENCY_CONTACT_RELATIONSHIPS,
   formatEmergencyContactRelationship,
   selectClassName,
@@ -150,12 +154,10 @@ export function ClientRow({
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label htmlFor={`edit-ec-phone-${client.id}`}>Phone</Label>
-                <Input
+                <PhoneInput
                   id={`edit-ec-phone-${client.id}`}
                   name="emergencyContactPhone"
-                  type="tel"
                   defaultValue={client.emergency_contact_phone ?? ""}
-                  placeholder="(555) 555-5555"
                 />
               </div>
               <div className="space-y-1.5">
@@ -171,16 +173,11 @@ export function ClientRow({
                 />
               </div>
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor={`edit-ec-address-${client.id}`}>Address</Label>
-              <Textarea
-                id={`edit-ec-address-${client.id}`}
-                name="emergencyContactAddress"
-                defaultValue={client.emergency_contact_address ?? ""}
-                placeholder="123 Main St, City, ST 00000"
-                rows={2}
-              />
-            </div>
+            <AddressFields
+              idPrefix={`edit-ec-${client.id}`}
+              name="emergencyContactAddress"
+              defaultValue={client.emergency_contact_address ?? ""}
+            />
           </fieldset>
 
           <fieldset className="space-y-3 rounded-lg border bg-muted/30 p-3">
@@ -199,12 +196,10 @@ export function ClientRow({
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label htmlFor={`edit-sc-phone-${client.id}`}>Phone</Label>
-                <Input
+                <PhoneInput
                   id={`edit-sc-phone-${client.id}`}
                   name="serviceCoordinatorPhone"
-                  type="tel"
                   defaultValue={client.service_coordinator_phone ?? ""}
-                  placeholder="(555) 555-5555"
                 />
               </div>
               <div className="space-y-1.5">

@@ -1,6 +1,7 @@
 import { CreateLocationForm } from "@/app/dashboard/locations/create-location-form";
 import { LocationRow } from "@/app/dashboard/locations/location-row";
 import { FREE_PLAN_LIMITS } from "@/lib/plan-limits";
+import type { Location } from "@/types/db";
 import { createClient } from "@/utils/supabase/server";
 import { getSessionProfile } from "@/utils/supabase/session";
 import { cookies } from "next/headers";
@@ -57,12 +58,12 @@ export default async function LocationsPage() {
       <div>
         <h1 className="text-xl font-semibold">Locations</h1>
         <p className="text-sm text-muted-foreground">
-          Your day care sites. Staff and clients are each assigned to one
-          location.
+          Your day care sites, plus contact and vendor details for future
+          outreach. Staff and clients are each assigned to one location.
         </p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_320px] lg:gap-8">
+      <div className="grid gap-6 lg:grid-cols-[1fr_minmax(320px,420px)] lg:gap-8">
         <div className="order-first h-fit rounded-lg border bg-white p-4 lg:order-last">
           <h2 className="mb-3 text-sm font-semibold">Add a location</h2>
           {session.profile.plan === "free" &&
@@ -85,7 +86,7 @@ export default async function LocationsPage() {
             (locations ?? []).map((location) => (
               <LocationRow
                 key={location.id}
-                location={location}
+                location={location as Location}
                 staffCount={staffCountByLocation.get(location.id) ?? 0}
                 clientCount={clientCountByLocation.get(location.id) ?? 0}
               />

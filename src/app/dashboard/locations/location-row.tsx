@@ -5,10 +5,11 @@ import {
   updateLocation,
   type ActionState,
 } from "@/app/dashboard/locations/actions";
+import {
+  LocationFields,
+  LocationSummary,
+} from "@/app/dashboard/locations/location-fields";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import type { Location } from "@/types/db";
 import { useActionState, useRef, useState } from "react";
 
@@ -44,32 +45,13 @@ export function LocationRow({
             updateAction(formData);
             setEditing(false);
           }}
-          className="space-y-3"
+          className="space-y-4"
         >
           <input type="hidden" name="id" value={location.id} />
-          <Input
-            name="name"
-            defaultValue={location.name}
-            placeholder="Location name"
-            required
-          />
-          <Input
-            name="address"
-            defaultValue={location.address ?? ""}
-            placeholder="Address"
-          />
-          <div className="space-y-1.5">
-            <Label htmlFor={`program-description-${location.id}`}>
-              Program description
-            </Label>
-            <Textarea
-              id={`program-description-${location.id}`}
-              name="programDescription"
-              defaultValue={location.program_description ?? ""}
-              placeholder="What this program does, for the Annual Assessment Report's Program Overview section"
-              rows={3}
-            />
-          </div>
+          <LocationFields location={location} idPrefix={`edit-${location.id}`} />
+          {updateState.error ? (
+            <p className="text-sm text-destructive">{updateState.error}</p>
+          ) : null}
           <div className="flex gap-2">
             <Button type="submit" size="sm" disabled={updatePending}>
               Save
@@ -90,24 +72,16 @@ export function LocationRow({
 
   return (
     <li className="flex flex-col gap-4 rounded-lg border bg-white p-4 sm:flex-row sm:items-start sm:justify-between">
-      <div className="min-w-0">
-        <p className="font-medium text-foreground">{location.name}</p>
-        {location.address ? (
-          <p className="text-sm text-muted-foreground">{location.address}</p>
-        ) : null}
-        <p className="mt-1 text-xs text-muted-foreground">
+      <div className="min-w-0 space-y-1">
+        <LocationSummary location={location} />
+        <p className="text-xs text-muted-foreground">
           {staffCount} staff &middot; {clientCount} clients
         </p>
-        {location.program_description ? (
-          <p className="mt-1 text-xs text-muted-foreground">
-            {location.program_description}
-          </p>
-        ) : null}
         {updateState.error ? (
-          <p className="mt-1 text-xs text-destructive">{updateState.error}</p>
+          <p className="text-xs text-destructive">{updateState.error}</p>
         ) : null}
         {deleteState.error ? (
-          <p className="mt-1 text-xs text-destructive">{deleteState.error}</p>
+          <p className="text-xs text-destructive">{deleteState.error}</p>
         ) : null}
       </div>
       <div className="flex flex-col gap-2 sm:shrink-0 sm:flex-row">

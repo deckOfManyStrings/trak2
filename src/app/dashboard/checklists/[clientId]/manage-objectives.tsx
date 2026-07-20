@@ -7,10 +7,12 @@ import {
   updateObjective,
   type ActionState,
 } from "@/app/dashboard/checklists/actions";
+import { ImportChecklist, type ImportChecklistHandle } from "@/app/dashboard/checklists/[clientId]/import-checklist";
 import { MonthPicker } from "@/app/dashboard/checklists/[clientId]/month-picker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import type { ObjectiveWithEntryCount } from "@/types/db";
 import Link from "next/link";
 import { useActionState, useEffect, useRef, useState } from "react";
@@ -52,6 +54,7 @@ function ObjectiveRow({
 }) {
   const [editing, setEditing] = useState(false);
   const [title, setTitle] = useState(objective.title);
+  const [description, setDescription] = useState(objective.description ?? "");
   const [updateState, updateAction, updatePending] = useActionState(
     updateObjective,
     initialState,
@@ -68,8 +71,9 @@ function ObjectiveRow({
 
   useEffect(() => {
     setTitle(objective.title);
+    setDescription(objective.description ?? "");
     setEditing(false);
-  }, [objective.title, objective.id]);
+  }, [objective.title, objective.description, objective.id]);
 
   useEffect(() => {
     if (updateState.success) {
@@ -80,30 +84,49 @@ function ObjectiveRow({
   const error =
     updateState.error || statusState.error || deleteState.error || null;
 
+  const resetEditing = () => {
+    setTitle(objective.title);
+    setDescription(objective.description ?? "");
+    setEditing(false);
+  };
+
   return (
     <li className="space-y-2 px-3 py-3">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           {editing ? (
-            <form
-              action={updateAction}
-              className="flex flex-col gap-2 sm:flex-row sm:items-center"
-            >
+            <form action={updateAction} className="space-y-3">
               <input type="hidden" name="clientId" value={clientId} />
               <input type="hidden" name="objectiveId" value={objective.id} />
-              {index !== null ? (
-                <span className="shrink-0 text-sm text-muted-foreground">
-                  #{index + 1}
-                </span>
-              ) : null}
-              <Input
-                name="title"
-                value={title}
-                onChange={(event) => setTitle(event.target.value)}
-                required
-                className="min-w-0 flex-1"
-                aria-label="Objective title"
-              />
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                {index !== null ? (
+                  <span className="shrink-0 text-sm text-muted-foreground">
+                    #{index + 1}
+                  </span>
+                ) : null}
+                <Input
+                  name="title"
+                  value={title}
+                  onChange={(event) => setTitle(event.target.value)}
+                  required
+                  className="min-w-0 flex-1"
+                  aria-label="Objective title"
+                  placeholder="Short title for the checklist"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor={`objective-description-${objective.id}`}>
+                  Export description
+                </Label>
+                <Textarea
+                  id={`objective-description-${objective.id}`}
+                  name="description"
+                  value={description}
+                  onChange={(event) => setDescription(event.target.value)}
+                  rows={3}
+                  placeholder="Long wording for the monthly Excel form (optional)"
+                />
+              </div>
               <div className="flex gap-2">
                 <Button type="submit" size="sm" disabled={pending}>
                   {updatePending ? "Saving..." : "Save"}
@@ -113,30 +136,34 @@ function ObjectiveRow({
                   size="sm"
                   variant="ghost"
                   disabled={pending}
-                  onClick={() => {
-                    setTitle(objective.title);
-                    setEditing(false);
-                  }}
+                  onClick={resetEditing}
                 >
                   Cancel
                 </Button>
               </div>
             </form>
           ) : (
-            <div className="flex min-w-0 items-baseline gap-2">
-              {index !== null ? (
-                <span className="shrink-0 text-sm text-muted-foreground">
-                  #{index + 1}
+            <div className="min-w-0 space-y-1">
+              <div className="flex min-w-0 items-baseline gap-2">
+                {index !== null ? (
+                  <span className="shrink-0 text-sm text-muted-foreground">
+                    #{index + 1}
+                  </span>
+                ) : null}
+                <span className="min-w-0 text-sm text-foreground">
+                  {objective.title}
                 </span>
-              ) : null}
-              <span className="min-w-0 text-sm text-foreground">
-                {objective.title}
-              </span>
-              {objective.entry_count > 0 ? (
-                <span className="shrink-0 text-xs text-muted-foreground">
-                  {objective.entry_count} mark
-                  {objective.entry_count === 1 ? "" : "s"}
-                </span>
+                {objective.entry_count > 0 ? (
+                  <span className="shrink-0 text-xs text-muted-foreground">
+                    {objective.entry_count} mark
+                    {objective.entry_count === 1 ? "" : "s"}
+                  </span>
+                ) : null}
+              </div>
+              {objective.description ? (
+                <p className="truncate text-xs text-muted-foreground">
+                  {objective.description}
+                </p>
               ) : null}
             </div>
           )}
@@ -152,7 +179,7 @@ function ObjectiveRow({
               disabled={pending}
               onClick={() => setEditing(true)}
             >
-              Rename
+              Edit
             </Button>
             <form action={statusAction}>
               <input type="hidden" name="clientId" value={clientId} />
@@ -222,6 +249,7 @@ export function ManageObjectives({
   const [exportOpen, setExportOpen] = useState(false);
   const moreRef = useRef<HTMLDivElement>(null);
   const exportRef = useRef<HTMLDivElement>(null);
+  const importRef = useRef<ImportChecklistHandle>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const addFormRef = useRef<HTMLFormElement>(null);
   const [addState, addAction, addPending] = useActionState(
@@ -277,6 +305,12 @@ export function ManageObjectives({
     setOpen(true);
   };
 
+  const openImport = () => {
+    setExportOpen(false);
+    setMoreOpen(false);
+    importRef.current?.pickFile();
+  };
+
   const exportMenuItems = (
     <>
       <a
@@ -289,6 +323,13 @@ export function ManageObjectives({
       >
         Export to Excel
       </a>
+      <button
+        type="button"
+        className="block w-full rounded-md px-3 py-3 text-left text-sm font-medium hover:bg-muted"
+        onClick={openImport}
+      >
+        Import from Excel
+      </button>
       <Link
         href={`/dashboard/checklists/${clientId}/quarterly-report`}
         className="block rounded-md px-3 py-3 text-sm font-medium hover:bg-muted"
@@ -324,6 +365,7 @@ export function ManageObjectives({
 
   return (
     <div className="space-y-4">
+      <ImportChecklist ref={importRef} clientId={clientId} month={month} />
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
           <p className="text-sm text-muted-foreground">
@@ -405,9 +447,9 @@ export function ManageObjectives({
               Objectives for {clientName}
             </h2>
             <p className="text-xs text-muted-foreground">
-              Rename to update wording. Retire to hide from the checklist while
-              keeping daily marks. Delete permanently only when an objective
-              was added by mistake.
+              Edit title and optional export description. Retire to hide from
+              the checklist while keeping daily marks. Delete permanently only
+              when an objective was added by mistake.
             </p>
           </div>
 
@@ -454,10 +496,10 @@ export function ManageObjectives({
           <form
             ref={addFormRef}
             action={addAction}
-            className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end"
+            className="space-y-3"
           >
             <input type="hidden" name="clientId" value={clientId} />
-            <div className="min-w-0 flex-1 space-y-1.5">
+            <div className="space-y-1.5">
               <Label htmlFor="objective-title">Add objective</Label>
               <Input
                 ref={inputRef}
@@ -467,11 +509,22 @@ export function ManageObjectives({
                 required
               />
             </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="objective-description">
+                Export description (optional)
+              </Label>
+              <Textarea
+                id="objective-description"
+                name="description"
+                rows={2}
+                placeholder="Long wording for the monthly Excel form"
+              />
+            </div>
             <Button type="submit" disabled={addPending}>
               {addPending ? "Adding..." : "Add"}
             </Button>
             {addState.error ? (
-              <p className="w-full text-sm text-destructive">{addState.error}</p>
+              <p className="text-sm text-destructive">{addState.error}</p>
             ) : null}
           </form>
 

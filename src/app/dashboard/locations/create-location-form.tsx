@@ -1,10 +1,9 @@
 "use client";
 
 import { createLocation, type ActionState } from "@/app/dashboard/locations/actions";
+import { LocationFields } from "@/app/dashboard/locations/location-fields";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 
 const initialState: ActionState = {};
 
@@ -14,32 +13,18 @@ export function CreateLocationForm() {
     initialState,
   );
   const formRef = useRef<HTMLFormElement>(null);
+  const [fieldsKey, setFieldsKey] = useState(0);
 
   useEffect(() => {
     if (state.success) {
       formRef.current?.reset();
+      setFieldsKey((key) => key + 1);
     }
   }, [state.success]);
 
   return (
-    <form ref={formRef} action={formAction} className="space-y-3">
-      <div className="space-y-1.5">
-        <Label htmlFor="location-name">Name</Label>
-        <Input
-          id="location-name"
-          name="name"
-          placeholder="Sunrise Day Center"
-          required
-        />
-      </div>
-      <div className="space-y-1.5">
-        <Label htmlFor="location-address">Address</Label>
-        <Input
-          id="location-address"
-          name="address"
-          placeholder="123 Main St, Springfield"
-        />
-      </div>
+    <form ref={formRef} action={formAction} className="space-y-4">
+      <LocationFields fieldsKey={fieldsKey} idPrefix="create-location" />
       {state.error ? (
         <p className="text-sm text-destructive">{state.error}</p>
       ) : null}
