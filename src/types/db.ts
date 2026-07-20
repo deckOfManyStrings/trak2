@@ -8,6 +8,9 @@ export type Profile = {
   owner_id: string | null;
   email: string;
   full_name: string | null;
+  position: string | null;
+  shift_time: string | null;
+  date_of_hire: string | null;
   status: AccountStatus;
   plan: AccountPlan;
   created_at: string;

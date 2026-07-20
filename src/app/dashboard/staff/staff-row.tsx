@@ -7,6 +7,11 @@ import {
   updateStaffProfile,
   type ActionState,
 } from "@/app/dashboard/staff/actions";
+import {
+  formatStaffShiftTime,
+  STAFF_SHIFT_TIMES,
+  staffSelectClassName,
+} from "@/app/dashboard/staff/staff-options";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -60,13 +65,15 @@ export function StaffRow({ staff, currentLocationId, locations }: StaffRowProps)
     });
   };
 
+  const shiftLabel = formatStaffShiftTime(staff.shift_time);
+
   if (editing) {
     return (
       <li className="rounded-lg border bg-white p-4">
         <form action={updateAction} className="space-y-3">
           <input type="hidden" name="staffId" value={staff.id} />
           <div className="space-y-1.5">
-            <Label htmlFor={`edit-name-${staff.id}`}>Full name</Label>
+            <Label htmlFor={`edit-name-${staff.id}`}>Name</Label>
             <Input
               id={`edit-name-${staff.id}`}
               name="fullName"
@@ -75,7 +82,44 @@ export function StaffRow({ staff, currentLocationId, locations }: StaffRowProps)
               required
             />
           </div>
-          <p className="truncate text-sm text-muted-foreground">{staff.email}</p>
+          <div className="space-y-1.5">
+            <Label htmlFor={`edit-position-${staff.id}`}>Position</Label>
+            <Input
+              id={`edit-position-${staff.id}`}
+              name="position"
+              defaultValue={staff.position ?? ""}
+              placeholder="Direct Support Professional"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor={`edit-shift-${staff.id}`}>Shift time</Label>
+            <select
+              id={`edit-shift-${staff.id}`}
+              name="shiftTime"
+              defaultValue={staff.shift_time ?? ""}
+              className={staffSelectClassName}
+            >
+              <option value="">Select shift</option>
+              {STAFF_SHIFT_TIMES.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor={`edit-hire-date-${staff.id}`}>Date of hire</Label>
+            <Input
+              id={`edit-hire-date-${staff.id}`}
+              name="dateOfHire"
+              type="date"
+              defaultValue={staff.date_of_hire ?? ""}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label>Email address</Label>
+            <p className="text-sm text-muted-foreground">{staff.email}</p>
+          </div>
           {updateState.error ? (
             <p className="text-sm text-destructive">{updateState.error}</p>
           ) : null}
@@ -99,19 +143,24 @@ export function StaffRow({ staff, currentLocationId, locations }: StaffRowProps)
 
   return (
     <li className="flex flex-col gap-4 rounded-lg border bg-white p-4 sm:flex-row sm:items-start sm:justify-between">
-      <div className="min-w-0">
+      <div className="min-w-0 space-y-1">
         <p className="truncate font-medium text-foreground">
           {staff.full_name || staff.email}
         </p>
+        {staff.position ? (
+          <p className="text-sm text-muted-foreground">{staff.position}</p>
+        ) : null}
         <p className="truncate text-sm text-muted-foreground">{staff.email}</p>
-        <p className="mt-1 text-xs text-muted-foreground">
+        <p className="text-xs text-muted-foreground">
           {STATUS_LABEL[staff.status]}
+          {shiftLabel ? ` · ${shiftLabel}` : ""}
+          {staff.date_of_hire ? ` · Hired ${staff.date_of_hire}` : ""}
         </p>
         {assignError ? (
-          <p className="mt-1 text-xs text-destructive">{assignError}</p>
+          <p className="text-xs text-destructive">{assignError}</p>
         ) : null}
         {revokeState.error ? (
-          <p className="mt-1 text-xs text-destructive">{revokeState.error}</p>
+          <p className="text-xs text-destructive">{revokeState.error}</p>
         ) : null}
       </div>
 

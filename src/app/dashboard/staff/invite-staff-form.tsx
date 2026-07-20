@@ -1,6 +1,7 @@
 "use client";
 
 import { inviteStaff, type ActionState } from "@/app/dashboard/staff/actions";
+import { staffSelectClassName } from "@/app/dashboard/staff/staff-options";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,7 +26,7 @@ export function InviteStaffForm({ locations }: { locations: Location[] }) {
   return (
     <form ref={formRef} action={formAction} className="space-y-3">
       <div className="space-y-1.5">
-        <Label htmlFor="invite-email">Email</Label>
+        <Label htmlFor="invite-email">Email address</Label>
         <Input
           id="invite-email"
           name="email"
@@ -35,7 +36,7 @@ export function InviteStaffForm({ locations }: { locations: Location[] }) {
         />
       </div>
       <div className="space-y-1.5">
-        <Label htmlFor="invite-full-name">Full name (optional)</Label>
+        <Label htmlFor="invite-full-name">Name (optional)</Label>
         <Input id="invite-full-name" name="fullName" placeholder="Jamie Lee" />
       </div>
       <div className="space-y-1.5">
@@ -44,7 +45,7 @@ export function InviteStaffForm({ locations }: { locations: Location[] }) {
           id="invite-location"
           name="locationId"
           defaultValue=""
-          className="h-11 w-full rounded-lg border border-input bg-transparent px-3 text-base outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:h-8 md:px-2.5 md:text-sm dark:bg-input/30"
+          className={staffSelectClassName}
         >
           <option value="">Assign later</option>
           {locations.map((location) => (

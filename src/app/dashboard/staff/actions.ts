@@ -1,5 +1,6 @@
 "use server";
 
+import { parseStaffShiftTime } from "@/app/dashboard/staff/staff-options";
 import { FREE_PLAN_LIMITS } from "@/lib/plan-limits";
 import { createAdminClient } from "@/utils/supabase/admin";
 import { createClient } from "@/utils/supabase/server";
@@ -18,6 +19,23 @@ async function requireAdmin() {
     return null;
   }
   return session;
+}
+
+function readStaffEmploymentFields(formData: FormData) {
+  const shiftRaw = String(formData.get("shiftTime") ?? "").trim();
+  const shiftTime = parseStaffShiftTime(shiftRaw);
+  if (shiftRaw && !shiftTime) {
+    return { error: "Choose a valid shift time." } as const;
+  }
+
+  const dateOfHire = String(formData.get("dateOfHire") ?? "").trim();
+
+  return {
+    full_name: String(formData.get("fullName") ?? "").trim() || null,
+    position: String(formData.get("position") ?? "").trim() || null,
+    shift_time: shiftTime,
+    date_of_hire: dateOfHire || null,
+  } as const;
 }
 
 export async function inviteStaff(
@@ -168,8 +186,9 @@ export async function removeStaffFromLocation(
 }
 
 /**
- * Updates a staff member's full_name. Admins only; target must be staff
- * owned by the current admin. Never accepts role, owner_id, plan, or email.
+ * Updates a staff member's name and employment details. Admins only; target
+ * must be staff owned by the current admin. Never accepts role, owner_id,
+ * plan, or email.
  */
 export async function updateStaffProfile(
   _prevState: ActionState,
@@ -181,13 +200,16 @@ export async function updateStaffProfile(
   }
 
   const staffId = String(formData.get("staffId") ?? "");
-  const fullName = String(formData.get("fullName") ?? "").trim();
+  const employment = readStaffEmploymentFields(formData);
+  if ("error" in employment) {
+    return { error: employment.error };
+  }
 
   if (!staffId) {
     return { error: "Missing staff id." };
   }
-  if (!fullName) {
-    return { error: "Full name is required." };
+  if (!employment.full_name) {
+    return { error: "Name is required." };
   }
 
   const cookieStore = await cookies();
@@ -209,7 +231,12 @@ export async function updateStaffProfile(
 
   const { error } = await supabase
     .from("profiles")
-    .update({ full_name: fullName })
+    .update({
+      full_name: employment.full_name,
+      position: employment.position,
+      shift_time: employment.shift_time,
+      date_of_hire: employment.date_of_hire,
+    })
     .eq("id", staffId)
     .eq("role", "staff")
     .eq("owner_id", session.userId);
