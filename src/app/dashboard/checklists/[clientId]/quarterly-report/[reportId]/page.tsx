@@ -88,6 +88,13 @@ export default async function QuarterlyReportDetailPage({
       </div>
 
       <div className="rounded-lg border bg-white p-4">
+        <h2 className="mb-1 text-sm font-semibold">Quarterly Summary</h2>
+        <p className="text-sm text-muted-foreground">
+          {typedReport.summary ?? "No summary provided."}
+        </p>
+      </div>
+
+      <div className="rounded-lg border bg-white p-4">
         <h2 className="mb-1 text-sm font-semibold">Program Overview</h2>
         <p className="text-sm text-muted-foreground">
           {typedLocation?.program_description ?? "No program description on file."}
@@ -120,13 +127,6 @@ export default async function QuarterlyReportDetailPage({
             </div>
           ))
         )}
-      </div>
-
-      <div className="rounded-lg border bg-white p-4">
-        <h2 className="mb-1 text-sm font-semibold">Quarterly Summary</h2>
-        <p className="text-sm text-muted-foreground">
-          {typedReport.summary ?? "No summary provided."}
-        </p>
       </div>
     </div>
   );

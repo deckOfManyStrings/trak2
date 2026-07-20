@@ -39,6 +39,16 @@ export function NewQuarterlyReportForm({
       <input type="hidden" name="periodStart" value={periodStart} />
       <input type="hidden" name="periodEnd" value={periodEnd} />
 
+      <div className="space-y-1.5">
+        <Label htmlFor="summary">Quarterly summary</Label>
+        <Textarea
+          id="summary"
+          name="summary"
+          placeholder="Overall summary of the client's quarter, including transportation notes if relevant"
+          rows={5}
+        />
+      </div>
+
       <div className="space-y-3">
         <h2 className="text-sm font-semibold">
           Objectives &amp; Quarterly Progress
@@ -75,16 +85,6 @@ export function NewQuarterlyReportForm({
             </div>
           ))
         )}
-      </div>
-
-      <div className="space-y-1.5">
-        <Label htmlFor="summary">Quarterly summary</Label>
-        <Textarea
-          id="summary"
-          name="summary"
-          placeholder="Overall summary of the client's quarter, including transportation notes if relevant"
-          rows={5}
-        />
       </div>
 
       {state.error ? (

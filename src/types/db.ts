@@ -39,6 +39,11 @@ export type Client = {
   date_of_admission: string | null;
   ucid: string | null;
   allergies: string | null;
+  emergency_contact_name: string | null;
+  emergency_contact_relationship: string | null;
+  emergency_contact_phone: string | null;
+  emergency_contact_address: string | null;
+  emergency_contact_email: string | null;
   service_coordinator_name: string | null;
   service_coordinator_phone: string | null;
   service_coordinator_email: string | null;

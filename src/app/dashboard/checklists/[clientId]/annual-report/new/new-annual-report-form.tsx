@@ -36,6 +36,16 @@ export function NewAnnualReportForm({
       <input type="hidden" name="periodStart" value={periodStart} />
       <input type="hidden" name="periodEnd" value={periodEnd} />
 
+      <div className="space-y-1.5">
+        <Label htmlFor="summary">Annual summary</Label>
+        <Textarea
+          id="summary"
+          name="summary"
+          placeholder="Overall summary of the client's year, including transportation notes if relevant"
+          rows={5}
+        />
+      </div>
+
       <div className="space-y-3">
         <h2 className="text-sm font-semibold">Objectives &amp; Annual Progress</h2>
         {stats.length === 0 ? (
@@ -70,16 +80,6 @@ export function NewAnnualReportForm({
             </div>
           ))
         )}
-      </div>
-
-      <div className="space-y-1.5">
-        <Label htmlFor="summary">Annual summary</Label>
-        <Textarea
-          id="summary"
-          name="summary"
-          placeholder="Overall summary of the client's year, including transportation notes if relevant"
-          rows={5}
-        />
       </div>
 
       {state.error ? (

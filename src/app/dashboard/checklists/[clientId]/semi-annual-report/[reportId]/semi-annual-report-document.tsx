@@ -145,6 +145,15 @@ export function SemiAnnualReportDocument({
         </View>
 
         <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Semi-Annual Summary</Text>
+          {report.summary ? (
+            <Text style={styles.paragraph}>{report.summary}</Text>
+          ) : (
+            <Text style={styles.emptyState}>No summary provided.</Text>
+          )}
+        </View>
+
+        <View style={styles.section}>
           <Text style={styles.sectionTitle}>Program Overview</Text>
           {location?.program_description ? (
             <Text style={styles.paragraph}>{location.program_description}</Text>
@@ -182,15 +191,6 @@ export function SemiAnnualReportDocument({
                 )}
               </View>
             ))
-          )}
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Semi-Annual Summary</Text>
-          {report.summary ? (
-            <Text style={styles.paragraph}>{report.summary}</Text>
-          ) : (
-            <Text style={styles.emptyState}>No summary provided.</Text>
           )}
         </View>
 

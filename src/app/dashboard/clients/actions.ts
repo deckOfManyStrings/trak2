@@ -1,5 +1,8 @@
 "use server";
 
+import {
+  parseEmergencyContactRelationship,
+} from "@/app/dashboard/clients/emergency-contact";
 import { FREE_PLAN_LIMITS } from "@/lib/plan-limits";
 import { createClient } from "@/utils/supabase/server";
 import { getSessionProfile } from "@/utils/supabase/session";
@@ -19,6 +22,29 @@ async function requireAdmin() {
   return session;
 }
 
+function readEmergencyContactFields(formData: FormData) {
+  const relationshipRaw = String(
+    formData.get("emergencyContactRelationship") ?? "",
+  ).trim();
+  const relationship = parseEmergencyContactRelationship(relationshipRaw);
+
+  if (relationshipRaw && !relationship) {
+    return { error: "Choose a valid emergency contact relationship." } as const;
+  }
+
+  return {
+    emergency_contact_name:
+      String(formData.get("emergencyContactName") ?? "").trim() || null,
+    emergency_contact_relationship: relationship,
+    emergency_contact_phone:
+      String(formData.get("emergencyContactPhone") ?? "").trim() || null,
+    emergency_contact_address:
+      String(formData.get("emergencyContactAddress") ?? "").trim() || null,
+    emergency_contact_email:
+      String(formData.get("emergencyContactEmail") ?? "").trim() || null,
+  } as const;
+}
+
 export async function createClientRecord(
   _prevState: ActionState,
   formData: FormData,
@@ -32,6 +58,10 @@ export async function createClientRecord(
   const locationId = String(formData.get("locationId") ?? "");
   const ucid = String(formData.get("ucid") ?? "").trim();
   const allergies = String(formData.get("allergies") ?? "").trim();
+  const emergencyContact = readEmergencyContactFields(formData);
+  if ("error" in emergencyContact) {
+    return { error: emergencyContact.error };
+  }
   const serviceCoordinatorName = String(
     formData.get("serviceCoordinatorName") ?? "",
   ).trim();
@@ -71,6 +101,7 @@ export async function createClientRecord(
     full_name: fullName,
     ucid: ucid || null,
     allergies: allergies || null,
+    ...emergencyContact,
     service_coordinator_name: serviceCoordinatorName || null,
     service_coordinator_phone: serviceCoordinatorPhone || null,
     service_coordinator_email: serviceCoordinatorEmail || null,
@@ -88,9 +119,9 @@ export async function createClientRecord(
 
 /**
  * Updates a client's profile fields (name, DOB, admission date, UCID,
- * allergies, service coordinator). Both admins and staff assigned to the
- * client's location may edit them - enforced by the clients RLS update
- * policy, same as setClientStatus below.
+ * allergies, emergency contact, service coordinator). Both admins and staff
+ * assigned to the client's location may edit them - enforced by the clients
+ * RLS update policy, same as setClientStatus below.
  */
 export async function updateClientRecord(
   _prevState: ActionState,
@@ -107,6 +138,10 @@ export async function updateClientRecord(
   const dateOfAdmission = String(formData.get("dateOfAdmission") ?? "").trim();
   const ucid = String(formData.get("ucid") ?? "").trim();
   const allergies = String(formData.get("allergies") ?? "").trim();
+  const emergencyContact = readEmergencyContactFields(formData);
+  if ("error" in emergencyContact) {
+    return { error: emergencyContact.error };
+  }
   const serviceCoordinatorName = String(
     formData.get("serviceCoordinatorName") ?? "",
   ).trim();
@@ -132,6 +167,7 @@ export async function updateClientRecord(
       date_of_admission: dateOfAdmission || null,
       ucid: ucid || null,
       allergies: allergies || null,
+      ...emergencyContact,
       service_coordinator_name: serviceCoordinatorName || null,
       service_coordinator_phone: serviceCoordinatorPhone || null,
       service_coordinator_email: serviceCoordinatorEmail || null,

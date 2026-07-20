@@ -7,6 +7,11 @@ import {
   updateClientRecord,
   type ActionState,
 } from "@/app/dashboard/clients/actions";
+import {
+  EMERGENCY_CONTACT_RELATIONSHIPS,
+  formatEmergencyContactRelationship,
+  selectClassName,
+} from "@/app/dashboard/clients/emergency-contact";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -52,96 +57,169 @@ export function ClientRow({
             updateAction(formData);
             setEditing(false);
           }}
-          className="space-y-3"
+          className="space-y-4"
         >
           <input type="hidden" name="clientId" value={client.id} />
-          <div className="space-y-1.5">
-            <Label htmlFor={`edit-name-${client.id}`}>Full name</Label>
-            <Input
-              id={`edit-name-${client.id}`}
-              name="fullName"
-              defaultValue={client.full_name}
-              required
-            />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor={`edit-ucid-${client.id}`}>UCID</Label>
-            <Input
-              id={`edit-ucid-${client.id}`}
-              name="ucid"
-              defaultValue={client.ucid ?? ""}
-              placeholder="Unique client ID"
-            />
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2">
+
+          <div className="space-y-3">
             <div className="space-y-1.5">
-              <Label htmlFor={`edit-dob-${client.id}`}>Date of birth</Label>
+              <Label htmlFor={`edit-name-${client.id}`}>Full name</Label>
               <Input
-                id={`edit-dob-${client.id}`}
-                name="dateOfBirth"
-                type="date"
-                defaultValue={client.date_of_birth ?? ""}
+                id={`edit-name-${client.id}`}
+                name="fullName"
+                defaultValue={client.full_name}
+                required
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor={`edit-admission-${client.id}`}>
-                Date of admission
-              </Label>
+              <Label htmlFor={`edit-ucid-${client.id}`}>UCID</Label>
               <Input
-                id={`edit-admission-${client.id}`}
-                name="dateOfAdmission"
-                type="date"
-                defaultValue={client.date_of_admission ?? ""}
+                id={`edit-ucid-${client.id}`}
+                name="ucid"
+                defaultValue={client.ucid ?? ""}
+                placeholder="Unique client ID"
               />
             </div>
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor={`edit-allergies-${client.id}`}>Allergies</Label>
-            <Textarea
-              id={`edit-allergies-${client.id}`}
-              name="allergies"
-              defaultValue={client.allergies ?? ""}
-              placeholder="Known allergies"
-              rows={3}
-            />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor={`edit-sc-name-${client.id}`}>
-              Service coordinator name
-            </Label>
-            <Input
-              id={`edit-sc-name-${client.id}`}
-              name="serviceCoordinatorName"
-              defaultValue={client.service_coordinator_name ?? ""}
-              placeholder="Jordan Lee"
-            />
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor={`edit-sc-phone-${client.id}`}>
-                Service coordinator phone
-              </Label>
-              <Input
-                id={`edit-sc-phone-${client.id}`}
-                name="serviceCoordinatorPhone"
-                type="tel"
-                defaultValue={client.service_coordinator_phone ?? ""}
-                placeholder="(555) 555-5555"
-              />
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label htmlFor={`edit-dob-${client.id}`}>Date of birth</Label>
+                <Input
+                  id={`edit-dob-${client.id}`}
+                  name="dateOfBirth"
+                  type="date"
+                  defaultValue={client.date_of_birth ?? ""}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor={`edit-admission-${client.id}`}>
+                  Date of admission
+                </Label>
+                <Input
+                  id={`edit-admission-${client.id}`}
+                  name="dateOfAdmission"
+                  type="date"
+                  defaultValue={client.date_of_admission ?? ""}
+                />
+              </div>
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor={`edit-sc-email-${client.id}`}>
-                Service coordinator email
-              </Label>
-              <Input
-                id={`edit-sc-email-${client.id}`}
-                name="serviceCoordinatorEmail"
-                type="email"
-                defaultValue={client.service_coordinator_email ?? ""}
-                placeholder="coordinator@example.com"
+              <Label htmlFor={`edit-allergies-${client.id}`}>Allergies</Label>
+              <Textarea
+                id={`edit-allergies-${client.id}`}
+                name="allergies"
+                defaultValue={client.allergies ?? ""}
+                placeholder="Known allergies"
+                rows={2}
               />
             </div>
           </div>
+
+          <fieldset className="space-y-3 rounded-lg border bg-muted/30 p-3">
+            <legend className="px-1 text-sm font-semibold">
+              Emergency contact
+            </legend>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label htmlFor={`edit-ec-name-${client.id}`}>Name</Label>
+                <Input
+                  id={`edit-ec-name-${client.id}`}
+                  name="emergencyContactName"
+                  defaultValue={client.emergency_contact_name ?? ""}
+                  placeholder="Alex Rivera"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor={`edit-ec-relationship-${client.id}`}>
+                  Relationship to client
+                </Label>
+                <select
+                  id={`edit-ec-relationship-${client.id}`}
+                  name="emergencyContactRelationship"
+                  defaultValue={client.emergency_contact_relationship ?? ""}
+                  className={selectClassName}
+                >
+                  <option value="">Select relationship</option>
+                  {EMERGENCY_CONTACT_RELATIONSHIPS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label htmlFor={`edit-ec-phone-${client.id}`}>Phone</Label>
+                <Input
+                  id={`edit-ec-phone-${client.id}`}
+                  name="emergencyContactPhone"
+                  type="tel"
+                  defaultValue={client.emergency_contact_phone ?? ""}
+                  placeholder="(555) 555-5555"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor={`edit-ec-email-${client.id}`}>
+                  Email address
+                </Label>
+                <Input
+                  id={`edit-ec-email-${client.id}`}
+                  name="emergencyContactEmail"
+                  type="email"
+                  defaultValue={client.emergency_contact_email ?? ""}
+                  placeholder="alex@example.com"
+                />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor={`edit-ec-address-${client.id}`}>Address</Label>
+              <Textarea
+                id={`edit-ec-address-${client.id}`}
+                name="emergencyContactAddress"
+                defaultValue={client.emergency_contact_address ?? ""}
+                placeholder="123 Main St, City, ST 00000"
+                rows={2}
+              />
+            </div>
+          </fieldset>
+
+          <fieldset className="space-y-3 rounded-lg border bg-muted/30 p-3">
+            <legend className="px-1 text-sm font-semibold">
+              Service coordinator
+            </legend>
+            <div className="space-y-1.5">
+              <Label htmlFor={`edit-sc-name-${client.id}`}>Name</Label>
+              <Input
+                id={`edit-sc-name-${client.id}`}
+                name="serviceCoordinatorName"
+                defaultValue={client.service_coordinator_name ?? ""}
+                placeholder="Jordan Lee"
+              />
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label htmlFor={`edit-sc-phone-${client.id}`}>Phone</Label>
+                <Input
+                  id={`edit-sc-phone-${client.id}`}
+                  name="serviceCoordinatorPhone"
+                  type="tel"
+                  defaultValue={client.service_coordinator_phone ?? ""}
+                  placeholder="(555) 555-5555"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor={`edit-sc-email-${client.id}`}>Email</Label>
+                <Input
+                  id={`edit-sc-email-${client.id}`}
+                  name="serviceCoordinatorEmail"
+                  type="email"
+                  defaultValue={client.service_coordinator_email ?? ""}
+                  placeholder="coordinator@example.com"
+                />
+              </div>
+            </div>
+          </fieldset>
+
           {updateState.error ? (
             <p className="text-sm text-destructive">{updateState.error}</p>
           ) : null}
@@ -180,9 +258,19 @@ export function ClientRow({
     });
   };
 
+  const relationshipLabel = formatEmergencyContactRelationship(
+    client.emergency_contact_relationship,
+  );
+  const hasEmergencyContact =
+    client.emergency_contact_name ||
+    relationshipLabel ||
+    client.emergency_contact_phone ||
+    client.emergency_contact_address ||
+    client.emergency_contact_email;
+
   return (
     <li className="flex flex-col gap-4 rounded-lg border bg-white p-4 sm:flex-row sm:items-start sm:justify-between">
-      <div className="min-w-0">
+      <div className="min-w-0 space-y-1">
         <p className="truncate font-medium text-foreground">
           {client.full_name}
         </p>
@@ -204,6 +292,30 @@ export function ClientRow({
           <p className="text-xs text-muted-foreground">
             Allergies: {client.allergies}
           </p>
+        ) : null}
+        {hasEmergencyContact ? (
+          <div className="text-xs text-muted-foreground">
+            <p>
+              Emergency contact
+              {client.emergency_contact_name
+                ? `: ${client.emergency_contact_name}`
+                : ""}
+              {relationshipLabel ? ` (${relationshipLabel})` : ""}
+            </p>
+            {client.emergency_contact_phone ||
+            client.emergency_contact_email ||
+            client.emergency_contact_address ? (
+              <p>
+                {[
+                  client.emergency_contact_phone,
+                  client.emergency_contact_email,
+                  client.emergency_contact_address,
+                ]
+                  .filter(Boolean)
+                  .join(" \u00b7 ")}
+              </p>
+            ) : null}
+          </div>
         ) : null}
         {client.service_coordinator_name ||
         client.service_coordinator_phone ||

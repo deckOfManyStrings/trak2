@@ -1,6 +1,10 @@
 "use client";
 
 import { createClientRecord, type ActionState } from "@/app/dashboard/clients/actions";
+import {
+  EMERGENCY_CONTACT_RELATIONSHIPS,
+  selectClassName,
+} from "@/app/dashboard/clients/emergency-contact";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,50 +28,112 @@ export function CreateClientForm({ locations }: { locations: Location[] }) {
   }, [state.success]);
 
   return (
-    <form ref={formRef} action={formAction} className="space-y-3">
-      <div className="space-y-1.5">
-        <Label htmlFor="client-name">Full name</Label>
-        <Input id="client-name" name="fullName" placeholder="Pat Rivera" required />
+    <form ref={formRef} action={formAction} className="space-y-4">
+      <div className="space-y-3">
+        <div className="space-y-1.5">
+          <Label htmlFor="client-name">Full name</Label>
+          <Input id="client-name" name="fullName" placeholder="Pat Rivera" required />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="client-ucid">UCID</Label>
+          <Input id="client-ucid" name="ucid" placeholder="Unique client ID" />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="client-allergies">Allergies</Label>
+          <Textarea
+            id="client-allergies"
+            name="allergies"
+            placeholder="Known allergies"
+            rows={2}
+          />
+        </div>
       </div>
-      <div className="space-y-1.5">
-        <Label htmlFor="client-ucid">UCID</Label>
-        <Input id="client-ucid" name="ucid" placeholder="Unique client ID" />
-      </div>
-      <div className="space-y-1.5">
-        <Label htmlFor="client-allergies">Allergies</Label>
-        <Textarea
-          id="client-allergies"
-          name="allergies"
-          placeholder="Known allergies"
-          rows={3}
-        />
-      </div>
-      <div className="space-y-1.5">
-        <Label htmlFor="client-sc-name">Service coordinator name</Label>
-        <Input
-          id="client-sc-name"
-          name="serviceCoordinatorName"
-          placeholder="Jordan Lee"
-        />
-      </div>
-      <div className="space-y-1.5">
-        <Label htmlFor="client-sc-phone">Service coordinator phone</Label>
-        <Input
-          id="client-sc-phone"
-          name="serviceCoordinatorPhone"
-          type="tel"
-          placeholder="(555) 555-5555"
-        />
-      </div>
-      <div className="space-y-1.5">
-        <Label htmlFor="client-sc-email">Service coordinator email</Label>
-        <Input
-          id="client-sc-email"
-          name="serviceCoordinatorEmail"
-          type="email"
-          placeholder="coordinator@example.com"
-        />
-      </div>
+
+      <fieldset className="space-y-3 rounded-lg border bg-muted/30 p-3">
+        <legend className="px-1 text-sm font-semibold">Emergency contact</legend>
+        <div className="space-y-1.5">
+          <Label htmlFor="client-ec-name">Name</Label>
+          <Input
+            id="client-ec-name"
+            name="emergencyContactName"
+            placeholder="Alex Rivera"
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="client-ec-relationship">Relationship to client</Label>
+          <select
+            id="client-ec-relationship"
+            name="emergencyContactRelationship"
+            defaultValue=""
+            className={selectClassName}
+          >
+            <option value="">Select relationship</option>
+            {EMERGENCY_CONTACT_RELATIONSHIPS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="client-ec-phone">Phone</Label>
+          <Input
+            id="client-ec-phone"
+            name="emergencyContactPhone"
+            type="tel"
+            placeholder="(555) 555-5555"
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="client-ec-address">Address</Label>
+          <Textarea
+            id="client-ec-address"
+            name="emergencyContactAddress"
+            placeholder="123 Main St, City, ST 00000"
+            rows={2}
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="client-ec-email">Email address</Label>
+          <Input
+            id="client-ec-email"
+            name="emergencyContactEmail"
+            type="email"
+            placeholder="alex@example.com"
+          />
+        </div>
+      </fieldset>
+
+      <fieldset className="space-y-3 rounded-lg border bg-muted/30 p-3">
+        <legend className="px-1 text-sm font-semibold">Service coordinator</legend>
+        <div className="space-y-1.5">
+          <Label htmlFor="client-sc-name">Name</Label>
+          <Input
+            id="client-sc-name"
+            name="serviceCoordinatorName"
+            placeholder="Jordan Lee"
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="client-sc-phone">Phone</Label>
+          <Input
+            id="client-sc-phone"
+            name="serviceCoordinatorPhone"
+            type="tel"
+            placeholder="(555) 555-5555"
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="client-sc-email">Email</Label>
+          <Input
+            id="client-sc-email"
+            name="serviceCoordinatorEmail"
+            type="email"
+            placeholder="coordinator@example.com"
+          />
+        </div>
+      </fieldset>
+
       <div className="space-y-1.5">
         <Label htmlFor="client-location">Location</Label>
         <select
@@ -75,7 +141,7 @@ export function CreateClientForm({ locations }: { locations: Location[] }) {
           name="locationId"
           defaultValue={locations[0]?.id ?? ""}
           required
-          className="h-11 w-full rounded-lg border border-input bg-transparent px-3 text-base outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:h-8 md:px-2.5 md:text-sm dark:bg-input/30"
+          className={selectClassName}
         >
           {locations.map((location) => (
             <option key={location.id} value={location.id}>
@@ -84,6 +150,7 @@ export function CreateClientForm({ locations }: { locations: Location[] }) {
           ))}
         </select>
       </div>
+
       {state.error ? (
         <p className="text-sm text-destructive">{state.error}</p>
       ) : null}
