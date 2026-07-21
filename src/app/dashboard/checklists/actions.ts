@@ -364,7 +364,7 @@ export async function previewChecklistImport(
 
   if (parsed.cells.length === 0 && parsed.unmatchedLabels.length === 0) {
     return {
-      error: "No checklist data found. Use a file exported from this app.",
+      error: "No progress note data found. Use a file exported from this app.",
     };
   }
 

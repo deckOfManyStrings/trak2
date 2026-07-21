@@ -9,7 +9,7 @@ import { useEffect, useRef, useState } from "react";
 export const PRIMARY_LINKS = [
   { href: "/dashboard", label: "Overview", match: "exact" as const },
   { href: "/dashboard/clients", label: "Clients", match: "prefix" as const },
-  { href: "/dashboard/checklists", label: "Checklists", match: "prefix" as const },
+  { href: "/dashboard/checklists", label: "Progress notes", match: "prefix" as const },
 ];
 
 export const ADMIN_MORE_LINKS = [

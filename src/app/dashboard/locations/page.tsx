@@ -58,8 +58,8 @@ export default async function LocationsPage() {
       <div>
         <h1 className="text-xl font-semibold">Locations</h1>
         <p className="text-sm text-muted-foreground">
-          Your day care sites, plus contact and vendor details for future
-          outreach. Staff and clients are each assigned to one location.
+          Your day care sites and regional center details. Staff and clients
+          are each assigned to one location.
         </p>
       </div>
 

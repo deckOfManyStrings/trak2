@@ -44,7 +44,7 @@ export function ProfileForm({ email, fullName }: ProfileFormProps) {
           required
         />
         <p className="text-xs text-muted-foreground">
-          Used for checklist initials when you record entries.
+          Used for progress note initials when you record entries.
         </p>
       </div>
       {state.error ? (

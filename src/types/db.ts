@@ -22,13 +22,8 @@ export type Location = {
   name: string;
   address: string | null;
   program_description: string | null;
-  contact_name: string | null;
-  contact_phone: string | null;
   service_type: string | null;
-  vendor_name: string | null;
-  vendor_number: string | null;
   regional_center: string | null;
-  vendor_address: string | null;
   business_address: string | null;
   created_at: string;
 };

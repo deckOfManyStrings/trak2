@@ -50,7 +50,7 @@ export function NewAnnualReportForm({
         <h2 className="text-sm font-semibold">Objectives &amp; Annual Progress</h2>
         {stats.length === 0 ? (
           <p className="rounded-lg border border-dashed bg-white p-4 text-sm text-muted-foreground">
-            No objectives have tracked checklist data for this client in the
+            No objectives have tracked progress note data for this client in the
             selected period ({periodStart} to {periodEnd}).
           </p>
         ) : (

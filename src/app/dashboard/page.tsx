@@ -178,7 +178,7 @@ export default async function DashboardPage() {
                 href="/dashboard/checklists"
                 className="mt-1 inline-flex min-h-11 items-center text-sm font-medium text-foreground underline underline-offset-4 md:min-h-0"
               >
-                Open checklists
+                Open progress notes
               </Link>
             </li>
           ))}

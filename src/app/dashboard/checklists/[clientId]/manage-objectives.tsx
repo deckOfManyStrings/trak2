@@ -111,7 +111,7 @@ function ObjectiveRow({
                   required
                   className="min-w-0 flex-1"
                   aria-label="Objective title"
-                  placeholder="Short title for the checklist"
+                  placeholder="Short title for progress notes"
                 />
               </div>
               <div className="space-y-1.5">
@@ -373,7 +373,7 @@ export function ManageObjectives({
               href="/dashboard/checklists"
               className="inline-flex min-h-11 items-center underline underline-offset-4 hover:text-foreground md:min-h-0"
             >
-              Checklists
+              Progress notes
             </Link>{" "}
             / {clientName}
           </p>
@@ -448,7 +448,7 @@ export function ManageObjectives({
             </h2>
             <p className="text-xs text-muted-foreground">
               Edit title and optional export description. Retire to hide from
-              the checklist while keeping daily marks. Delete permanently only
+              progress notes while keeping daily marks. Delete permanently only
               when an objective was added by mistake.
             </p>
           </div>
@@ -477,7 +477,7 @@ export function ManageObjectives({
                 Retired
               </h3>
               <p className="text-xs text-muted-foreground">
-                Hidden from daily entry. Marks are kept for reports and
+                Hidden from progress notes. Marks are kept for reports and
                 history.
               </p>
               <ul className="divide-y rounded-lg border border-dashed">

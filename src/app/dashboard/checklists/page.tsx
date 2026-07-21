@@ -31,7 +31,7 @@ export default async function ChecklistsPage() {
   return (
     <div className="space-y-6 md:space-y-8">
       <div>
-        <h1 className="text-xl font-semibold">Checklists</h1>
+        <h1 className="text-xl font-semibold">Progress notes</h1>
         <p className="text-sm text-muted-foreground">
           Pick a client to fill out or review their daily objectives.
         </p>

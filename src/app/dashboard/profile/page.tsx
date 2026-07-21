@@ -11,7 +11,7 @@ export default async function ProfilePage() {
       <div>
         <h1 className="text-xl font-semibold">Profile</h1>
         <p className="text-sm text-muted-foreground">
-          Update your name. This is how you appear on checklists.
+          Update your name. This is how you appear on progress notes.
         </p>
       </div>
 

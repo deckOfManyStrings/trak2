@@ -7,10 +7,7 @@ import {
   locationSelectClassName,
   REGIONAL_CENTERS,
 } from "@/app/dashboard/locations/location-options";
-import {
-  AddressFields,
-  PhoneInput,
-} from "@/components/contact-fields";
+import { AddressFields } from "@/components/contact-fields";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -18,7 +15,7 @@ import type { Location } from "@/types/db";
 
 type LocationFieldsProps = {
   location?: Location;
-  /** Bumps controlled phone/address inputs after a successful create. */
+  /** Bumps controlled address inputs after a successful create. */
   fieldsKey?: number;
   idPrefix?: string;
   showProgramDescription?: boolean;
@@ -44,28 +41,6 @@ export function LocationFields({
       </div>
 
       <fieldset className="space-y-3 rounded-lg border bg-muted/30 p-3">
-        <legend className="px-1 text-sm font-semibold">Contact</legend>
-        <div className="space-y-1.5">
-          <Label htmlFor={`${idPrefix}-contact-name`}>Contact name</Label>
-          <Input
-            id={`${idPrefix}-contact-name`}
-            name="contactName"
-            defaultValue={location?.contact_name ?? ""}
-            placeholder="Person who purchased the app"
-          />
-        </div>
-        <div className="space-y-1.5">
-          <Label htmlFor={`${idPrefix}-contact-phone`}>Contact phone</Label>
-          <PhoneInput
-            key={`phone-${idPrefix}-${fieldsKey}`}
-            id={`${idPrefix}-contact-phone`}
-            name="contactPhone"
-            defaultValue={location?.contact_phone ?? ""}
-          />
-        </div>
-      </fieldset>
-
-      <fieldset className="space-y-3 rounded-lg border bg-muted/30 p-3">
         <legend className="px-1 text-sm font-semibold">Service site</legend>
         <div className="space-y-1.5">
           <Label htmlFor={`${idPrefix}-service-type`}>Service type</Label>
@@ -82,35 +57,6 @@ export function LocationFields({
               </option>
             ))}
           </select>
-        </div>
-        <AddressFields
-          key={`address-${idPrefix}-${fieldsKey}`}
-          idPrefix={`${idPrefix}-address`}
-          name="address"
-          defaultValue={location?.address ?? ""}
-          legend="Address"
-        />
-      </fieldset>
-
-      <fieldset className="space-y-3 rounded-lg border bg-muted/30 p-3">
-        <legend className="px-1 text-sm font-semibold">Vendor</legend>
-        <div className="space-y-1.5">
-          <Label htmlFor={`${idPrefix}-vendor-name`}>Vendor name</Label>
-          <Input
-            id={`${idPrefix}-vendor-name`}
-            name="vendorName"
-            defaultValue={location?.vendor_name ?? ""}
-            placeholder="Vendor / provider name"
-          />
-        </div>
-        <div className="space-y-1.5">
-          <Label htmlFor={`${idPrefix}-vendor-number`}>Vendor number</Label>
-          <Input
-            id={`${idPrefix}-vendor-number`}
-            name="vendorNumber"
-            defaultValue={location?.vendor_number ?? ""}
-            placeholder="Vendor number"
-          />
         </div>
         <div className="space-y-1.5">
           <Label htmlFor={`${idPrefix}-regional-center`}>Regional center</Label>
@@ -129,11 +75,11 @@ export function LocationFields({
           </select>
         </div>
         <AddressFields
-          key={`vendor-address-${idPrefix}-${fieldsKey}`}
-          idPrefix={`${idPrefix}-vendor-address`}
-          name="vendorAddress"
-          defaultValue={location?.vendor_address ?? ""}
-          legend="Vendor address"
+          key={`address-${idPrefix}-${fieldsKey}`}
+          idPrefix={`${idPrefix}-address`}
+          name="address"
+          defaultValue={location?.address ?? ""}
+          legend="Address"
         />
       </fieldset>
 
@@ -176,27 +122,8 @@ export function LocationSummary({ location }: { location: Location }) {
       {location.address ? (
         <p className="text-sm text-muted-foreground">{location.address}</p>
       ) : null}
-      {location.contact_name || location.contact_phone ? (
-        <p className="text-xs text-muted-foreground">
-          Contact
-          {location.contact_name ? `: ${location.contact_name}` : ""}
-          {location.contact_phone ? ` · ${location.contact_phone}` : ""}
-        </p>
-      ) : null}
-      {location.vendor_name ||
-      location.vendor_number ||
-      regionalCenter ? (
-        <p className="text-xs text-muted-foreground">
-          Vendor
-          {location.vendor_name ? `: ${location.vendor_name}` : ""}
-          {location.vendor_number ? ` · #${location.vendor_number}` : ""}
-          {regionalCenter ? ` · ${regionalCenter}` : ""}
-        </p>
-      ) : null}
-      {location.vendor_address ? (
-        <p className="text-xs text-muted-foreground">
-          Vendor address: {location.vendor_address}
-        </p>
+      {regionalCenter ? (
+        <p className="text-xs text-muted-foreground">{regionalCenter}</p>
       ) : null}
       {location.business_address ? (
         <p className="text-xs text-muted-foreground">

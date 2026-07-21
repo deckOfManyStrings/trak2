@@ -243,8 +243,8 @@ export function ChecklistGrid({
       >
         <table className="border-collapse text-sm select-none">
           <thead>
-            <tr className="border-b bg-muted/40">
-              <th className="sticky left-0 z-10 min-w-[220px] bg-muted/40 p-2 text-left font-medium text-foreground">
+            <tr className="border-b bg-muted">
+              <th className="sticky left-0 z-20 min-w-[220px] border-r bg-muted p-2 text-left font-medium text-foreground">
                 Objective
               </th>
               {days.map((day) => (
@@ -261,7 +261,7 @@ export function ChecklistGrid({
             {objectives.map((objective, index) => (
               <Fragment key={objective.id}>
                 <tr className="border-b">
-                  <td className="sticky left-0 z-10 min-w-[220px] bg-white p-2 font-medium text-foreground">
+                  <td className="sticky left-0 z-10 min-w-[220px] border-r bg-white p-2 font-medium text-foreground">
                     #{index + 1} {objective.title}
                   </td>
                   {days.map((day) => {
@@ -310,8 +310,8 @@ export function ChecklistGrid({
                     );
                   })}
                 </tr>
-                <tr className="border-b bg-muted/20">
-                  <td className="sticky left-0 z-10 min-w-[220px] bg-muted/20 p-2 pl-6 text-xs text-muted-foreground">
+                <tr className="border-b bg-muted">
+                  <td className="sticky left-0 z-10 min-w-[220px] border-r bg-muted p-2 pl-6 text-xs text-muted-foreground">
                     Initials
                   </td>
                   {days.map((day) => {

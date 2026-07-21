@@ -38,14 +38,9 @@ function readLocationFields(formData: FormData) {
 
   return {
     name: String(formData.get("name") ?? "").trim(),
-    contact_name: String(formData.get("contactName") ?? "").trim() || null,
-    contact_phone: String(formData.get("contactPhone") ?? "").trim() || null,
     service_type: serviceType,
     address: String(formData.get("address") ?? "").trim() || null,
-    vendor_name: String(formData.get("vendorName") ?? "").trim() || null,
-    vendor_number: String(formData.get("vendorNumber") ?? "").trim() || null,
     regional_center: regionalCenter,
-    vendor_address: String(formData.get("vendorAddress") ?? "").trim() || null,
     business_address:
       String(formData.get("businessAddress") ?? "").trim() || null,
     program_description:
