@@ -2,6 +2,10 @@
 
 import { createAnnualReport, type ActionState } from "@/app/dashboard/checklists/[clientId]/annual-report/new/actions";
 import type { ObjectiveStat } from "@/app/dashboard/checklists/annual-report-stats";
+import {
+  formatReportRating,
+  getReportRating,
+} from "@/app/dashboard/checklists/report-rating";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -54,31 +58,36 @@ export function NewAnnualReportForm({
             selected period ({periodStart} to {periodEnd}).
           </p>
         ) : (
-          stats.map((stat) => (
-            <div
-              key={stat.objective_id}
-              className="space-y-2 rounded-lg border bg-white p-4"
-            >
-              <div>
-                <p className="text-sm font-medium text-foreground">
-                  {stat.title}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Achieved on {stat.yes_count} of {stat.tracked_days} tracked
-                  days ({stat.rating_percent}%)
-                </p>
+          stats.map((stat) => {
+            const rating =
+              stat.rating_percent === null
+                ? null
+                : getReportRating(stat.rating_percent);
+            return (
+              <div
+                key={stat.objective_id}
+                className="space-y-2 rounded-lg border bg-white p-4"
+              >
+                <div>
+                  <p className="text-sm font-medium text-foreground">
+                    {stat.title}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Achieved on {stat.yes_count} of {stat.tracked_days} tracked
+                    days
+                  </p>
+                  {rating ? (
+                    <p className="text-xs font-medium text-foreground">
+                      {formatReportRating(stat.rating_percent!)}
+                    </p>
+                  ) : null}
+                </div>
+                {rating ? (
+                  <p className="text-sm text-foreground">{rating.description}</p>
+                ) : null}
               </div>
-              <div className="space-y-1.5">
-                <Label htmlFor={`comment-${stat.objective_id}`}>Comments</Label>
-                <Textarea
-                  id={`comment-${stat.objective_id}`}
-                  name={`comment-${stat.objective_id}`}
-                  placeholder="Summarize progress on this objective for the period"
-                  rows={3}
-                />
-              </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
 

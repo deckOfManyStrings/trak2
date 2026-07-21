@@ -1,3 +1,7 @@
+import {
+  formatReportRating,
+  getReportRating,
+} from "@/app/dashboard/checklists/report-rating";
 import type {
   Client,
   Location,
@@ -174,23 +178,38 @@ export function SemiAnnualReportDocument({
               period.
             </Text>
           ) : (
-            objectives.map((objective) => (
-              <View key={objective.id} style={styles.objectiveBlock} wrap={false}>
-                <Text style={styles.objectiveTitle}>
-                  {objective.objective_title}
-                </Text>
-                <Text style={styles.objectiveRating}>
-                  {objective.rating_percent === null
-                    ? "No tracked data"
-                    : `Achieved on ${objective.yes_count} of ${objective.tracked_days} tracked days (${objective.rating_percent}%)`}
-                </Text>
-                {objective.comments ? (
-                  <Text style={styles.paragraph}>{objective.comments}</Text>
-                ) : (
-                  <Text style={styles.emptyState}>No comments provided.</Text>
-                )}
-              </View>
-            ))
+            objectives.map((objective) => {
+              const rating =
+                objective.rating_percent === null
+                  ? null
+                  : getReportRating(objective.rating_percent);
+              return (
+                <View
+                  key={objective.id}
+                  style={styles.objectiveBlock}
+                  wrap={false}
+                >
+                  <Text style={styles.objectiveTitle}>
+                    {objective.objective_title}
+                  </Text>
+                  <Text style={styles.objectiveRating}>
+                    {rating
+                      ? `Achieved on ${objective.yes_count} of ${objective.tracked_days} tracked days`
+                      : "No tracked data"}
+                  </Text>
+                  {rating ? (
+                    <>
+                      <Text style={styles.objectiveRating}>
+                        {formatReportRating(objective.rating_percent!)}
+                      </Text>
+                      <Text style={styles.paragraph}>
+                        {rating.description}
+                      </Text>
+                    </>
+                  ) : null}
+                </View>
+              );
+            })
           )}
         </View>
 

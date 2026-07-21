@@ -4,6 +4,7 @@ import {
   getTrackedObjectiveStats,
   parseSubmittedReportDates,
 } from "@/app/dashboard/checklists/annual-report-stats";
+import { getReportRating } from "@/app/dashboard/checklists/report-rating";
 import { createClient } from "@/utils/supabase/server";
 import { getSessionProfile } from "@/utils/supabase/session";
 import type { Client } from "@/types/db";
@@ -92,8 +93,9 @@ export async function createQuarterlyReport(
           tracked_days: stat.tracked_days,
           rating_percent: stat.rating_percent,
           comments:
-            String(formData.get(`comment-${stat.objective_id}`) ?? "").trim() ||
-            null,
+            stat.rating_percent === null
+              ? null
+              : getReportRating(stat.rating_percent).description,
         })),
       );
 

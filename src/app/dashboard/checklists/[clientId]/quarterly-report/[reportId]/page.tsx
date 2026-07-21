@@ -1,3 +1,7 @@
+import {
+  formatReportRating,
+  getReportRating,
+} from "@/app/dashboard/checklists/report-rating";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/utils/supabase/server";
@@ -110,22 +114,33 @@ export default async function QuarterlyReportDetailPage({
             No objectives had tracked data for this review period.
           </p>
         ) : (
-          typedObjectives.map((objective) => (
-            <div key={objective.id} className="rounded-lg border bg-white p-4">
-              <p className="text-sm font-medium text-foreground">
-                {objective.objective_title}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Achieved on {objective.yes_count} of {objective.tracked_days}{" "}
-                tracked days ({objective.rating_percent}%)
-              </p>
-              {objective.comments ? (
-                <p className="mt-2 text-sm text-foreground">
-                  {objective.comments}
+          typedObjectives.map((objective) => {
+            const rating =
+              objective.rating_percent === null
+                ? null
+                : getReportRating(objective.rating_percent);
+            return (
+              <div key={objective.id} className="rounded-lg border bg-white p-4">
+                <p className="text-sm font-medium text-foreground">
+                  {objective.objective_title}
                 </p>
-              ) : null}
-            </div>
-          ))
+                <p className="text-xs text-muted-foreground">
+                  Achieved on {objective.yes_count} of {objective.tracked_days}{" "}
+                  tracked days
+                </p>
+                {rating ? (
+                  <>
+                    <p className="text-xs font-medium text-foreground">
+                      {formatReportRating(objective.rating_percent!)}
+                    </p>
+                    <p className="mt-2 text-sm text-foreground">
+                      {rating.description}
+                    </p>
+                  </>
+                ) : null}
+              </div>
+            );
+          })
         )}
       </div>
     </div>
